@@ -1,5 +1,11 @@
+package cards;
+
 public class CardGame {
     public static void main(String[] args) {
         System.out.println("Hello, world!");
+    }
+
+    public static int return10() {
+        return 10;
     }
 }
