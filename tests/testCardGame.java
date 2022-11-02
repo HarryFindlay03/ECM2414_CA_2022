@@ -38,9 +38,9 @@ public class testCardGame {
         });
     }
 
-//    @Test
-//    void testPackLength() {
-//        int expectedPackLength = Player.getPlayerIds().size() * 8;
-//        assertEquals(expectedPackLength, );
-//    }
+    @Test
+    void testPackLength() {
+        int expectedPackLength = Player.getPlayerIds().size() * 8;
+        assertEquals(expectedPackLength, cardGame.getPackLength());
+    }
 }

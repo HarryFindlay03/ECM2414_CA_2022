@@ -21,12 +21,28 @@ public class CardGame {
         this.deckLength = ((8 * numPlayers) - (4 * numPlayers)) / 4;
     }
 
+    //inner class pack
+    class Pack {
+        public Pack() {
+
+        }
+
+
+    }
+
     //setup game
     public void gameSetup() {
         for(int i = 0; i < numPlayers; i++) {
             createPlayer();
             createDeck();
         }
+
+        //Generate a Pack and populate decks
+        /*
+        Pack class:
+            Read file into a stack
+        - Distribute cards from the pack into decks in a round robin fashion    
+         */
     }
 
     //create players
