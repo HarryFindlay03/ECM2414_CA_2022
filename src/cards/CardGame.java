@@ -10,9 +10,11 @@ public class CardGame {
     private int numPlayers;
     private int deckLength;
 
+    //potentially each card game has a list of playerids and deck ids associated with it.
+
     private Stack<Integer> pack;
 
-    public CardGame(int numPlayers, String filename) throws InvalidPackException{
+    public CardGame(int numPlayers, String filename) throws InvalidPackException, FileNotFoundException{
         if(numPlayers <= 0) {
             throw new InvalidPackException("Number of players needs to be greater than 0");
         }
@@ -24,8 +26,8 @@ public class CardGame {
         try {
             this.pack = ReadFile.getStack(filename);
         } catch (FileNotFoundException e) {
-            System.out.println("File not found!");
-            e.printStackTrace(); //debug
+            e.printStackTrace();
+            throw new FileNotFoundException("File not found!");
         }
     }
 
@@ -43,6 +45,7 @@ public class CardGame {
 
             sc.close();
             return pack;
+
         }
     }
 
@@ -79,7 +82,7 @@ public class CardGame {
     }
 
     //MAIN EXECUTABLE METHOD
-    public static void main(String[] args) throws InvalidPackException{
-        CardGame cg = new CardGame(4, "test.txt");
+    public static void main(String[] args) throws InvalidPackException, FileNotFoundException{
+        CardGame cg = new CardGame(4, "packs/4.txt");
     }
 }
