@@ -1,13 +1,17 @@
 package cards;
 
 import java.util.ArrayList;
+import java.util.Stack;
 
 public interface CardGameInterface {
-    ArrayList<Integer> createPack();
+    int createPack() throws InvalidPackException;
 
-    Player createPlayer();
+    /*return player id*/
+    int createPlayer();
 
     Deck createDeck();
 
-    
+
+
+
 }

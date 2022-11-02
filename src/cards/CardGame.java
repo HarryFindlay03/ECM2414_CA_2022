@@ -1,20 +1,11 @@
 package cards;
 
 import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.Stack;
 
 public class CardGame {
-    private ArrayList<Integer> pack =  new ArrayList<Integer>();
     public static void main(String[] args) {
-        System.out.println("Hello, world!");
+        Scanner sc = new Scanner(System.in);
     }
-
-    public static int return10() {
-        return 10;
-    }
-
-    public ArrayList<Integer> getPack() {
-        return pack;
-    }
-
-    
 }

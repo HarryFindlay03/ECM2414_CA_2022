@@ -8,6 +8,19 @@ public class Player {
     private ArrayList<Card> playerHand = new ArrayList<>();
     private int preference;
 
+    //Constructor
+    public Player() {
+        if(playerIds.size() == 0) {
+            playerId = 1;
+        } else {
+            playerId = playerIds.get(playerIds.size()) + 1;
+        }
+        playerIds.add(playerId);
+    }
+
+    public int getPlayerId() {
+        return playerId;
+    }
 
     //TODO
     public Boolean checkCardValue() {

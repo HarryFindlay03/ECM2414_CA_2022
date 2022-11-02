@@ -1,18 +1,21 @@
-import cards.CardGame;
+import cards.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 public class testCardGame {
-    private final CardGame cardGame = new CardGame();
+    ImplementCardGameInterface cgInterface = new ImplementCardGameInterface(4, "test.txt");
 
     @Test
-    void testReturn10() {
-        assertEquals(10, cardGame.return10());
+    void testCreatePlayer() {
+        assertEquals(1, cgInterface.createPlayer());
     }
-
-    void testReadPackFile(int numPlayers) {
-        assertEquals(8*numPlayers, cardGame.getPack().size());
+    @Test
+    void testCreatePack() throws InvalidPackException{
+        //for pack size 4
+        assertEquals(32, cgInterface.createPack());
     }
-
 
 }
