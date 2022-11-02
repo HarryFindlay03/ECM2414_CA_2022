@@ -9,4 +9,10 @@ public class testCardGame {
     void testReturn10() {
         assertEquals(10, cardGame.return10());
     }
+
+    void testReadPackFile(int numPlayers) {
+        assertEquals(8*numPlayers, cardGame.getPack().size());
+    }
+
+
 }

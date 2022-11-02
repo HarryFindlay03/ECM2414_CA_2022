@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="17fc7d04-c152-4b16-91ba-c9399b713946" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/cards/CardGame.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/testCardGame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+    <list default="true" id="1e9a0d55-7646-42a3-866c-b2f08fb61fe6" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/cards/Card.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/cards/Deck.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/cards/Player.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ECM2414_CA.iml" beforeDir="false" afterPath="$PROJECT_DIR$/ECM2414_CA.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CardGame.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/cards/CardGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/cards/CardGame.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/testCardGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/tests/testCardGame.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,17 +34,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="Downloaded.Files.Path.Enabled" value="false" />
-    <property name="Repository.Attach.Annotations" value="false" />
-    <property name="Repository.Attach.JavaDocs" value="false" />
-    <property name="Repository.Attach.Sources" value="false" />
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.0" />
-    <property name="project.structure.side.proportion" value="0.2" />
-  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Downloaded.Files.Path.Enabled": "false",
+    "Repository.Attach.Annotations": "false",
+    "Repository.Attach.JavaDocs": "false",
+    "Repository.Attach.Sources": "false"
+  }
+}]]></component>
   <component name="RunManager" selected="JUnit.testGame">
     <configuration name="game" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="cards.CardGame" />
