@@ -30,7 +30,7 @@ public class CardGame {
             this.pack = ReadFile.getStack(filename);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            throw new FileNotFoundException("File not found!");
+            throw e;
         }
     }
 

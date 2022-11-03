@@ -8,7 +8,7 @@ for x in range(0, num_files + 1):
     with open(file_name, "w+") as f:
         nums_to_gen = x * 8
         for i in range(nums_to_gen):
-            n = random.randint(1, 16)
+            n = random.randint(1, 14)
             if i == nums_to_gen - 1:
                 f.write(str(n))
             else:
