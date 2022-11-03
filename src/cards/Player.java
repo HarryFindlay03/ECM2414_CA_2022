@@ -26,11 +26,20 @@ public class Player {
         return playerIds;
     }
 
+    public void addToHand(Card card) {
+        playerHand.add(card);
+    }
+
+    public ArrayList<Card> getPlayerHand() {
+        return playerHand;
+    }
+
     //TODO
     public Boolean checkCardValue() {
         return false;
     }
     public void discard() {}
     public void pickUpCard(Deck deck) {}
+
 
 }
