@@ -13,7 +13,7 @@ public class Player {
         if(playerIds.size() == 0) {
             playerId = 1;
         } else {
-            playerId = playerIds.get(playerIds.size()) + 1;
+            playerId = playerIds.get(playerIds.size() - 1) + 1;
         }
         playerIds.add(playerId);
     }
@@ -22,12 +22,15 @@ public class Player {
         return playerId;
     }
 
+    public static ArrayList<Integer> getPlayerIds() {
+        return playerIds;
+    }
+
     //TODO
     public Boolean checkCardValue() {
         return false;
     }
     public void discard() {}
-
     public void pickUpCard(Deck deck) {}
 
 }
