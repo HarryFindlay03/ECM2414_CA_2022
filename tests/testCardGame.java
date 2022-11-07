@@ -1,12 +1,15 @@
 import cards.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.Random;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class testCardGame {
     CardGame cardGame;
@@ -98,6 +101,58 @@ public class testCardGame {
     void testDeckCards() {
         for(int i = 0; i < cardGame.getPlayersInGame().size(); i++) {
             assertEquals(4, cardGame.getDecksInGame().get(i).getDeckCards().size());
+        }
+    }
+
+    @Nested
+    class gameplayTests {
+        ArrayList<Player> playersInGame;
+        ArrayList<Deck> decksInGame;
+
+        @BeforeEach
+        void setUp() {
+            playersInGame = cardGame.getPlayersInGame();
+            decksInGame = cardGame.getDecksInGame();
+        }
+
+        @AfterEach
+        void tearDown() {
+            playersInGame.clear();
+            decksInGame.clear();
+        }
+
+        @Test
+        void testPickUpCard() {
+            for(int i = 0; i < playersInGame.size(); i++) {
+                cardGame.pickUpCard(playersInGame.get(i));
+                assertEquals(5, playersInGame.get(i).getPlayerHand().size());
+                assertEquals(3, decksInGame.get(i).getDeckCards().size());
+            }
+        }
+
+        @Test
+        void testDiscardCard() {
+            for(int i = 0; i < playersInGame.size(); i++) {
+                cardGame.discardCard(playersInGame.get(i));
+                assertEquals(3, playersInGame.get(i).getPlayerHand().size());
+
+                if(playersInGame.get(i).getPlayerId() + 1 == playersInGame.size()) {
+                    assertEquals(5, decksInGame.get(0).getDeckCards().size());
+                }
+                else {
+                    assertEquals(5, decksInGame.get(i + 1).getDeckCards().size());
+                }
+            }
+        }
+
+        @Test
+        void testGetCardToDiscard() {
+            for(int i = 0; i < playersInGame.size(); i++) {
+                Player player = playersInGame.get(i);
+                Card card = cardGame.getCardToDiscard(player);
+                assertNotEquals(player.getPreference(), card.getCardValue());
+
+            }
         }
     }
 }
