@@ -11,11 +11,13 @@ public class Player {
     //Constructor
     public Player() {
         if(playerIds.size() == 0) {
-            playerId = 1;
+            playerId = 0;
         } else {
             playerId = playerIds.get(playerIds.size() - 1) + 1;
         }
         playerIds.add(playerId);
+
+        this.preference = playerId;
     }
 
     public int getPlayerId() {
@@ -26,12 +28,25 @@ public class Player {
         return playerIds;
     }
 
+    /**
+     * addToHand method populates the player hand during the game setup phase,
+     * this is not to be used during gameplay.
+     * @param card
+     */
     public void addToHand(Card card) {
         playerHand.add(card);
     }
 
+    public void removeFromHand(Card card) {
+        playerHand.remove(card);
+    }
+
     public ArrayList<Card> getPlayerHand() {
         return playerHand;
+    }
+
+    public int getPreference() {
+        return preference;
     }
 
     //TODO

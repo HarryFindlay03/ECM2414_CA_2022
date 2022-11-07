@@ -11,11 +11,27 @@ public class Deck {
 
     public Deck() {
         if(deckIds.size() == 0) {
-            deckId = 1;
+            deckId = 0;
         } else {
             deckId = deckIds.get(deckIds.size() - 1) + 1;
         }
         deckIds.add(deckId);
+    }
+
+    /**
+     * Removes the first card from the deck for a player to pickup.
+     * @return
+     */
+    public Card removeCard() {
+        return deckCards.remove(0);
+    }
+
+    /**
+     * Adds card to deck that has been removed from player hand
+     * @param card Card that has been discarded from player hand.
+     */
+    public void addCard(Card card) {
+        deckCards.add(card);
     }
 
     public int getDeckId() {

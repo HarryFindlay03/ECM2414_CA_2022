@@ -1,6 +1,6 @@
 package cards;
 
-import java.lang.reflect.Array;
+import java.util.Random;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Stack;
@@ -96,6 +96,65 @@ public class CardGame {
         Deck deck = new Deck();
         decksInGame.add(deck);
         return deck.getDeckId();
+    }
+
+    //GAMEPLAY methods
+    public void pickUpCard(Player player) {
+        //get deck
+        Deck deck = decksInGame.get(player.getPlayerId());
+        //remove from deck, add to player hand
+        player.addToHand(deck.removeCard());
+    }
+
+    public void discardCard(Player player) {
+        //get deck
+        Deck deck;
+        if(player.getPlayerId() + 1 == numPlayers) {
+            deck = decksInGame.get(0);
+        }
+        else {
+            deck = decksInGame.get(player.getPlayerId() + 1);
+        }
+
+        //find card to discard
+        Card cardToDiscard = getCardToDiscard(player);
+
+        //remove from player hand, add to deck;
+        player.removeFromHand(cardToDiscard);
+        deck.addCard(cardToDiscard);
+    }
+
+    /**
+     * Checks a players preference, then returns a card to discard based off of CA game strategy
+     * we have been tasked to implement.
+     * @param player
+     * @return Card object that should be discarded from player hand.
+     */
+    public Card getCardToDiscard(Player player) {
+        //random num generator
+        Random random = new Random();
+
+        //get player hand
+        ArrayList<Card> playerHand = player.getPlayerHand();
+
+        //preference being playerId.
+        int pref = player.getPreference();
+
+        //look through hand, get indexes of cards that do not match preference.
+        ArrayList<Integer> notPref = new ArrayList<Integer>();
+
+        for(int i = 0; i < playerHand.size(); i++) {
+            if(playerHand.get(i).getCardValue() != pref) {
+                notPref.add(i);
+            }
+        }
+
+        //generate random number
+        int randomIndex = random.nextInt(0, notPref.size());
+
+        Card cardToDiscard = playerHand.get(notPref.get(randomIndex));
+
+        return cardToDiscard;
     }
 
     //GETTER METHODS
