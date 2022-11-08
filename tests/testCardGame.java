@@ -13,10 +13,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class testCardGame {
     CardGame cardGame;
+    int numPlayers;
 
     @BeforeEach
     void setUp() throws InvalidPackException, FileNotFoundException {
-        int numPlayers = 4;
+        numPlayers = 4;
         cardGame = new CardGame(numPlayers, "packs/" + numPlayers + ".txt");
         cardGame.gameSetup();
     }
@@ -159,6 +160,21 @@ public class testCardGame {
         void testCheckWin() {
             playersInGame.get(0).setWinningPlayerHand();
             assertEquals(true, cardGame.checkWin(playersInGame.get(0)));
+        }
+
+        @Nested
+        class ThreadTests {
+            @BeforeEach
+            void setUpThreads() {
+                cardGame.gameRun();
+            }
+
+            @Test
+            void testPlayerThread() {
+                for(int i = 0; i < numPlayers; i++) {
+                    assertEquals(true, Thread.getAllStackTraces().keySet().contains(String.valueOf(i)));
+                }
+            }
         }
     }
 }

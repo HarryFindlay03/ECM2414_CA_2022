@@ -52,17 +52,14 @@ public class CardGame {
         }
     }
 
-    class GameThread implements Runnable {
+    class PlayerThread implements Runnable {
         public void run() {
             //checkwin
             Player player = playersInGame.get(Integer.parseInt(Thread.currentThread().getName()));
             String threadName = Thread.currentThread().getName();
-            if(checkWin(player)) {
-                //file output win
-                System.out.printf("Player %d has won!\n", player.getPlayerId());
-            } else {
-                //file outputs check CA spec
 
+            while (!checkWin(player)) {
+                //file output win
                 //pickup hand
                 Card card = pickUpCard(player);
                 System.out.printf("Player %d has picked up card with value %d on Thread %s\n",player.getPlayerId() ,card.getCardValue(), threadName);
@@ -70,8 +67,12 @@ public class CardGame {
                 System.out.printf("Player %d has discarded card with value %d on Thread %s\n",player.getPlayerId() ,discardedCard.getCardValue(), threadName);
                 System.out.println("Player " + player.getPlayerId() + "Hand: " + player.getPlayerHand());
                 //discard
+
+                //file outputs check CA spec
             }
-            //if no one wins
+            // When player has won, we need to stop the other threads, this is by using a flag.
+            System.out.printf("Player %d has won!\n", player.getPlayerId());
+            notifyAll();
         }
     }
 
@@ -87,7 +88,7 @@ public class CardGame {
 
     public void gameRun() {
         for(int i = 0; i < numPlayers; i++) {
-            Thread t = new Thread(new GameThread());
+            Thread t = new Thread(new PlayerThread());
             t.setName(Integer.toString(i));
             t.start();
         }
@@ -130,7 +131,7 @@ public class CardGame {
     }
 
     //GAMEPLAY methods
-    public Card pickUpCard(Player player) {
+    public synchronized Card pickUpCard(Player player) {
         //get deck
         Deck deck = decksInGame.get(player.getPlayerId());
         //remove from deck, add to player hand
@@ -139,7 +140,7 @@ public class CardGame {
         return card;
     }
 
-    public Card discardCard(Player player) {
+    public synchronized Card discardCard(Player player) {
         //get deck
         Deck deck;
         if(player.getPlayerId() + 1 == numPlayers) {
@@ -222,8 +223,5 @@ public class CardGame {
         cg.gameSetup();
         cg.gameRun();
 
-        for(Thread t : Thread.getAllStackTraces().keySet()) {
-            System.out.println("Thread: " + t.getName());
-        }
     }
 }
