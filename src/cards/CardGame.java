@@ -58,26 +58,28 @@ public class CardGame {
             //checkwin
             Player player = playersInGame.get(Integer.parseInt(Thread.currentThread().getName()));
             String threadName = Thread.currentThread().getName();
-            while (!won) {
-                //file output win
-                //pickup hand
-                if(checkWin(player)) {
-                    won = true;
-                    System.out.printf("Player %d has won!\n", player.getPlayerId());
-                    break;
-                }
-                Card card = pickUpCard(player);
-                System.out.printf("Player %d has picked up card with value %d on Thread %s\n",player.getPlayerId() ,card.getCardValue(), threadName);
-                Card discardedCard = discardCard(player);
-                System.out.printf("Player %d has discarded card with value %d on Thread %s\n",player.getPlayerId() ,discardedCard.getCardValue(), threadName);
-                System.out.println("Player " + player.getPlayerId() + "Hand: " + player.getPlayerHand());
-                //discard
+            synchronized (player) {
+                while (!won) {
+                    //file output win
+                    //pickup hand
+                    if (checkWin(player)) {
+                        won = true;
+                        System.out.printf("Player %d has won!\n", player.getPlayerId());
+                        //if thread has won then it notifies waiting threads it has won, won flag has changed, so the game will end.
+                        break;
+                    }
+                    Card card = pickUpCard(player);
+                    System.out.printf("Player %d has picked up card with value %d on Thread %s\n", player.getPlayerId(), card.getCardValue(), threadName);
+                    Card discardedCard = discardCard(player);
 
-                //file outputs check CA spec
+                    System.out.printf("Player %d has discarded card with value %d on Thread %s\n", player.getPlayerId(), discardedCard.getCardValue(), threadName);
+                    System.out.println("Player " + player.getPlayerId() + "Hand: " + player.getPlayerHand());
+
+                    //thread then waits
+                }
+                // When player has won, we need to stop the other threads, this is by using a flag.
+                System.out.println("A player has won the game!");
             }
-            // When player has won, we need to stop the other threads, this is by using a flag.
-            System.out.println("A player has won the game!");
-            notifyAll();
 
         }
 
