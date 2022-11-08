@@ -154,5 +154,11 @@ public class testCardGame {
 
             }
         }
+
+        @Test
+        void testCheckWin() {
+            playersInGame.get(0).setWinningPlayerHand();
+            assertEquals(true, cardGame.checkWin(playersInGame.get(0)));
+        }
     }
 }

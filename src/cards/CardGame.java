@@ -157,6 +157,17 @@ public class CardGame {
         return cardToDiscard;
     }
 
+    public Boolean checkWin(Player player) {
+        ArrayList<Card> playerHand = player.getPlayerHand();
+
+        for(Card card : playerHand) {
+            if (card.getCardValue() != playerHand.get(0).getCardValue()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     //GETTER METHODS
     public Stack<Integer> getPack() {
         return pack;

@@ -48,6 +48,14 @@ public class Player {
     public int getPreference() {
         return preference;
     }
+    public void setWinningPlayerHand() {
+        playerHand.clear();
+        for( int i = 0; i < playerHand.size(); i++ ) {
+            playerHand.add(new Card(1));
+        }
+    }
+
+
 
     //TODO
     public Boolean checkCardValue() {
