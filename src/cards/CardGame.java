@@ -53,14 +53,19 @@ public class CardGame {
     }
 
     class PlayerThread implements Runnable {
+        private volatile boolean won = false;
         public void run() {
             //checkwin
             Player player = playersInGame.get(Integer.parseInt(Thread.currentThread().getName()));
             String threadName = Thread.currentThread().getName();
-
-            while (!checkWin(player)) {
+            while (!won) {
                 //file output win
                 //pickup hand
+                if(checkWin(player)) {
+                    won = true;
+                    System.out.printf("Player %d has won!\n", player.getPlayerId());
+                    break;
+                }
                 Card card = pickUpCard(player);
                 System.out.printf("Player %d has picked up card with value %d on Thread %s\n",player.getPlayerId() ,card.getCardValue(), threadName);
                 Card discardedCard = discardCard(player);
@@ -71,8 +76,13 @@ public class CardGame {
                 //file outputs check CA spec
             }
             // When player has won, we need to stop the other threads, this is by using a flag.
-            System.out.printf("Player %d has won!\n", player.getPlayerId());
+            System.out.println("A player has won the game!");
             notifyAll();
+
+        }
+
+        public void stopThread() {
+            this.won = true;
         }
     }
 
