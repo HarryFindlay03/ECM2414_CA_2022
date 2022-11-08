@@ -52,6 +52,29 @@ public class CardGame {
         }
     }
 
+    class GameThread implements Runnable {
+        public void run() {
+            //checkwin
+            Player player = playersInGame.get(Integer.parseInt(Thread.currentThread().getName()));
+            String threadName = Thread.currentThread().getName();
+            if(checkWin(player)) {
+                //file output win
+                System.out.printf("Player %d has won!\n", player.getPlayerId());
+            } else {
+                //file outputs check CA spec
+
+                //pickup hand
+                Card card = pickUpCard(player);
+                System.out.printf("Player %d has picked up card with value %d on Thread %s\n",player.getPlayerId() ,card.getCardValue(), threadName);
+                Card discardedCard = discardCard(player);
+                System.out.printf("Player %d has discarded card with value %d on Thread %s\n",player.getPlayerId() ,discardedCard.getCardValue(), threadName);
+                System.out.println("Player " + player.getPlayerId() + "Hand: " + player.getPlayerHand());
+                //discard
+            }
+            //if no one wins
+        }
+    }
+
     //setup game
     public void gameSetup() {
         for(int i = 0; i < numPlayers; i++) {
@@ -60,6 +83,14 @@ public class CardGame {
         }
         addToPlayers();
         addToDecks();
+    }
+
+    public void gameRun() {
+        for(int i = 0; i < numPlayers; i++) {
+            Thread t = new Thread(new GameThread());
+            t.setName(Integer.toString(i));
+            t.start();
+        }
     }
 
     public void addToPlayers() {
@@ -99,14 +130,16 @@ public class CardGame {
     }
 
     //GAMEPLAY methods
-    public void pickUpCard(Player player) {
+    public Card pickUpCard(Player player) {
         //get deck
         Deck deck = decksInGame.get(player.getPlayerId());
         //remove from deck, add to player hand
-        player.addToHand(deck.removeCard());
+        Card card = deck.removeCard();
+        player.addToHand(card);
+        return card;
     }
 
-    public void discardCard(Player player) {
+    public Card discardCard(Player player) {
         //get deck
         Deck deck;
         if(player.getPlayerId() + 1 == numPlayers) {
@@ -122,6 +155,8 @@ public class CardGame {
         //remove from player hand, add to deck;
         player.removeFromHand(cardToDiscard);
         deck.addCard(cardToDiscard);
+
+        return cardToDiscard;
     }
 
     /**
@@ -184,5 +219,11 @@ public class CardGame {
     //MAIN EXECUTABLE METHOD
     public static void main(String[] args) throws InvalidPackException, FileNotFoundException{
         CardGame cg = new CardGame(4, "packs/4.txt");
+        cg.gameSetup();
+        cg.gameRun();
+
+        for(Thread t : Thread.getAllStackTraces().keySet()) {
+            System.out.println("Thread: " + t.getName());
+        }
     }
 }
