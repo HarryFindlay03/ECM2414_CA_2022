@@ -188,7 +188,7 @@ public class CardGame {
     }
 
     /**
-     * Checks a players preference, then returns a card to discard based off of CA game strategy
+     * Checks a players preference, then returns the index of the card to discard based off of CA game strategy
      * we have been tasked to implement.
      * @param player
      * @return Card object that should be discarded from player hand.
@@ -201,27 +201,29 @@ public class CardGame {
         ArrayList<Card> playerHand = player.getPlayerHand();
 
         //preference being playerId.
-        int pref = player.getPreference();
-
+        int pref = player.getPlayerId();
         //look through hand, get indexes of cards that do not match preference.
         ArrayList<Integer> notPref = new ArrayList<Integer>();
 
-        for(int i = 0; i < playerHand.size(); i++) {
+        //player hand size is always 5 when deciding to discard.
+        for(int i = 0; i < 5; i++) {
             if(playerHand.get(i).getCardValue() != pref) {
                 notPref.add(i);
             }
         }
-
         //generate random number
         int randomIndex = random.nextInt(0, notPref.size());
-
+        //notpref is the indexes in the playerHand that are not of preference
         Card cardToDiscard = playerHand.get(notPref.get(randomIndex));
-
         return cardToDiscard;
     }
 
     public Boolean checkWin(Player player) {
         ArrayList<Card> playerHand = player.getPlayerHand();
+
+        if(playerHand.size() != 4) {
+            return false;
+        }
 
         for(Card card : playerHand) {
             if (card.getCardValue() != playerHand.get(0).getCardValue()) {
@@ -246,7 +248,7 @@ public class CardGame {
 
     //MAIN EXECUTABLE METHOD
     public static void main(String[] args) throws InvalidPackException, FileNotFoundException{
-        CardGame cg = new CardGame(4, "packs/4.txt");
+        CardGame cg = new CardGame(6, "packs/6.txt");
         cg.gameSetup();
         cg.gameRun();
     }
