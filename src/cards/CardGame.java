@@ -41,6 +41,7 @@ public class CardGame {
     //Inner class readfile
     class ReadFile {
         public static Stack<Integer> getStack(String filename) throws FileNotFoundException {
+            Random random = new Random();
             Stack<Integer> pack = new Stack<Integer>();
             File f = new File(filename);
             Scanner sc = new Scanner(f);
@@ -65,19 +66,19 @@ public class CardGame {
             Deck pickupDeck = decksInGame.get(player.getPlayerId());
 
             Deck discardDeck;
-            if(player.getPlayerId() + 1 == numPlayers) {
+            if (player.getPlayerId() + 1 == numPlayers) {
                 discardDeck = decksInGame.get(0);
             } else {
                 discardDeck = decksInGame.get(player.getPlayerId() + 1);
             }
 
 
-            while(!checkWin(player)) {
-                if(pickupDeck.getDeckCards().isEmpty()) {
-                    synchronized (this) {
+            while (!checkWin(player)) {
+                if (pickupDeck.getDeckCards().isEmpty()) {
+                    synchronized (player) {
                         try {
                             System.out.printf("Player %d is WAITING in thread %s\n", player.getPlayerId(), threadName);
-                            wait(1000);
+                            player.wait();
                         } catch (InterruptedException e) {
                             /*DO nothing*/
                         }
@@ -90,21 +91,27 @@ public class CardGame {
                     //System.out.printf("Player %d has discarded : %d\n", player.getPlayerId(), discarded.getCardValue());
                     //notify thread that is waiting, this thread will be the one that picks up from the deck just discarded to
                     Player canPlay;
-                    if(player.getPlayerId() + 1 == numPlayers) {
+                    if (player.getPlayerId() + 1 == numPlayers) {
                         canPlay = playersInGame.get(0);
                     } else {
                         canPlay = playersInGame.get(player.getPlayerId() + 1);
                     }
+                    synchronized (canPlay) {
+                        canPlay.notify();
+                    }
                 }
             }
             //A player has won
-            ArrayList<Integer> winningHand = new ArrayList<>();
-            for(Card c : player.getPlayerHand()) {
-                winningHand.add(c.getCardValue());
+            for (int i = 0; i < numPlayers; i++) {
+                ArrayList<Integer> winningHand = new ArrayList<>();
+                for (Card c : playersInGame.get(i).getPlayerHand()) {
+                    winningHand.add(c.getCardValue());
+                }
+                System.out.println("Player " + playersInGame.get(i).getPlayerId() + "'s Hand: " + winningHand);
             }
             System.out.printf("Player %d has won!\n", player.getPlayerId());
-            System.out.println("Player " + player.getPlayerId() + "'s Hand: " + winningHand);
-            System.exit(100);
+
+            System.exit(9);
         }
 
     }
@@ -134,6 +141,7 @@ public class CardGame {
             for(int j = 0; j < numPlayers; j++) {
                 Player player = playersInGame.get(j);
                 Card card = new Card(pack.pop());
+                System.out.printf("Adding card %d to player %d hand\n", card.getCardValue(), player.getPlayerId());
                 player.addToHand(card);
             }
         }
@@ -144,6 +152,7 @@ public class CardGame {
             for(int j = 0; j < numPlayers; j++) {
                 Deck deck = decksInGame.get(j);
                 Card card = new Card(pack.pop());
+                System.out.printf("Adding card %d to deck %d\n", card.getCardValue(), deck.getDeckId());
                 deck.addToDeckCards(card);
             }
         }
