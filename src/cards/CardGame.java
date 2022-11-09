@@ -60,32 +60,40 @@ public class CardGame {
         private static volatile boolean won = false;
 
         public void run() {
-            Player player = playersInGame.get(Integer.parseInt(Thread.currentThread().getName()));
+            String threadName = Thread.currentThread().getName();
+            Player player = playersInGame.get(Integer.parseInt(threadName));
             Deck pickupDeck = decksInGame.get(player.getPlayerId());
+
+            Deck discardDeck;
+            if(player.getPlayerId() + 1 == numPlayers) {
+                discardDeck = decksInGame.get(0);
+            } else {
+                discardDeck = decksInGame.get(player.getPlayerId() + 1);
+            }
+
 
             while(!checkWin(player)) {
                 if(pickupDeck.getDeckCards().isEmpty()) {
                     synchronized (this) {
                         try {
-                            wait();
+                            System.out.printf("Player %d is WAITING in thread %s\n", player.getPlayerId(), threadName);
+                            wait(1000);
                         } catch (InterruptedException e) {
                             /*DO nothing*/
                         }
                     }
                 } else {
+                    System.out.printf("Player %d is running!\n", player.getPlayerId());
                     Card pickedUp = pickUpCard(player);
-                    System.out.printf("Player %d has picked up: %d\n", player.getPlayerId(), pickedUp.getCardValue());
+                    //System.out.printf("Player %d has picked up: %d\n", player.getPlayerId(), pickedUp.getCardValue());
                     Card discarded = discardCard(player);
-                    System.out.printf("Player %d has discarded : %d\n", player.getPlayerId(), discarded.getCardValue());
+                    //System.out.printf("Player %d has discarded : %d\n", player.getPlayerId(), discarded.getCardValue());
                     //notify thread that is waiting, this thread will be the one that picks up from the deck just discarded to
                     Player canPlay;
                     if(player.getPlayerId() + 1 == numPlayers) {
                         canPlay = playersInGame.get(0);
                     } else {
                         canPlay = playersInGame.get(player.getPlayerId() + 1);
-                    }
-                    synchronized (canPlay) {
-                        canPlay.notify();
                     }
                 }
             }
@@ -248,7 +256,7 @@ public class CardGame {
 
     //MAIN EXECUTABLE METHOD
     public static void main(String[] args) throws InvalidPackException, FileNotFoundException{
-        CardGame cg = new CardGame(6, "packs/6.txt");
+        CardGame cg = new CardGame(4, "packs/4.txt");
         cg.gameSetup();
         cg.gameRun();
     }

@@ -50,7 +50,7 @@ public class Player {
     }
     public void setWinningPlayerHand() {
         playerHand.clear();
-        for( int i = 0; i < playerHand.size(); i++ ) {
+        for( int i = 0; i < 4; i++ ) {
             playerHand.add(new Card(1));
         }
     }
