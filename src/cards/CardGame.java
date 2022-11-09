@@ -8,6 +8,7 @@ import java.util.Scanner;
 import java.util.Stack;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class CardGame {
@@ -56,58 +57,49 @@ public class CardGame {
     }
 
     class PlayerThread implements Runnable {
-        private volatile boolean won = false;
-        private ReentrantLock lock;
-
-        public PlayerThread(ReentrantLock lock) {
-            this.lock = lock;
-        }
+        private static volatile boolean won = false;
 
         public void run() {
-            synchronized (lock) {
-                Player player = playersInGame.get(Integer.parseInt(Thread.currentThread().getName()));
-                //check if a thread has won
-                if(checkWin(player)) {
-                    System.out.printf("Player %d has won!\n", player.getPlayerId());
-                    won = true;
-                    notify();
-                }
-                while(!won) {
-                    //while a thread has not run, then run the pickup discard action
-                    //pickup card then discard
-                    Card pickedUp = pickUpCard(player);
-                    System.out.printf("Player %d has picked up card with value %d on thread %s\n", player.getPlayerId(), pickedUp.getCardValue(), Thread.currentThread().getName());
+            Player player = playersInGame.get(Integer.parseInt(Thread.currentThread().getName()));
+            Deck pickupDeck = decksInGame.get(player.getPlayerId());
 
-                    Card discarded = discardCard(player);
-                    System.out.printf("Player %d has discard card with value %d on thread %s\n", player.getPlayerId(), pickedUp.getCardValue(), Thread.currentThread().getName());
-
-                    //now check if this player has won
-                    if(checkWin(player)) {
-                        System.out.printf("Player %d has won!\n", player.getPlayerId());
-                        won = true;
-                        notify();
+            while(!checkWin(player)) {
+                if(pickupDeck.getDeckCards().isEmpty()) {
+                    synchronized (this) {
+                        try {
+                            wait();
+                        } catch (InterruptedException e) {
+                            /*DO nothing*/
+                        }
                     }
-                    lock.lock();
-                    unlockLock(lock);
-                }
-                if(won) {
-                    System.out.println("WON");
+                } else {
+                    Card pickedUp = pickUpCard(player);
+                    System.out.printf("Player %d has picked up: %d\n", player.getPlayerId(), pickedUp.getCardValue());
+                    Card discarded = discardCard(player);
+                    System.out.printf("Player %d has discarded : %d\n", player.getPlayerId(), discarded.getCardValue());
+                    //notify thread that is waiting, this thread will be the one that picks up from the deck just discarded to
+                    Player canPlay;
+                    if(player.getPlayerId() + 1 == numPlayers) {
+                        canPlay = playersInGame.get(0);
+                    } else {
+                        canPlay = playersInGame.get(player.getPlayerId() + 1);
+                    }
+                    synchronized (canPlay) {
+                        canPlay.notify();
+                    }
                 }
             }
-
+            //A player has won
+            ArrayList<Integer> winningHand = new ArrayList<>();
+            for(Card c : player.getPlayerHand()) {
+                winningHand.add(c.getCardValue());
+            }
+            System.out.printf("Player %d has won!\n", player.getPlayerId());
+            System.out.println("Player " + player.getPlayerId() + "'s Hand: " + winningHand);
+            System.exit(100);
         }
-    }
 
-//    class GameThread implements Runnable {
-//        ReentrantLock lock;
-//
-//        public GameThread(ReentrantLock lock) {
-//            this.lock = lock;
-//        }
-//        public void run() {
-//            lock.
-//        }
-//    }
+    }
 
     //setup game
     public void gameSetup() {
@@ -120,19 +112,13 @@ public class CardGame {
     }
 
     public void gameRun() {
-        //Main game thread
-        ReentrantLock lock = new ReentrantLock();
-
         //Player threads
         for(int i = 0; i < numPlayers; i++) {
-            Thread t = new Thread(new PlayerThread(lock));
+
+            Thread t = new Thread(new PlayerThread());
             t.setName(Integer.toString(i));
             t.start();
         }
-    }
-
-    public void unlockLock(ReentrantLock lock) {
-        lock.unlock();
     }
 
     public void addToPlayers() {
@@ -172,7 +158,7 @@ public class CardGame {
     }
 
     //GAMEPLAY methods
-    public Card pickUpCard(Player player) {
+    public synchronized Card pickUpCard(Player player) {
         //get deck
         Deck deck = decksInGame.get(player.getPlayerId());
         //remove from deck, add to player hand
@@ -181,7 +167,7 @@ public class CardGame {
         return card;
     }
 
-    public Card discardCard(Player player) {
+    public synchronized Card discardCard(Player player) {
         //get deck
         Deck deck;
         if(player.getPlayerId() + 1 == numPlayers) {
