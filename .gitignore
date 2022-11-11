@@ -1,6 +1,7 @@
 /.idea/workspace.xml
 /out
 /shelf/
+/src/cards/playerfiles/*.txt
 /packs/jonathan_packs/
 /packs/*.txt
 .DS_Store
