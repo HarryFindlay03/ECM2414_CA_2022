@@ -11,7 +11,7 @@ public class Player {
     //Constructor
     public Player() {
         if(playerIds.size() == 0) {
-            playerId = 0;
+            playerId = 1;
         } else {
             playerId = playerIds.get(playerIds.size() - 1) + 1;
         }
@@ -43,6 +43,15 @@ public class Player {
 
     public ArrayList<Card> getPlayerHand() {
         return playerHand;
+    }
+
+    public String getPlayerHandString() {
+        String strPlayerHand = "";
+        for(Card c : playerHand) {
+            strPlayerHand += String.format(" %d", c.getCardValue());
+        }
+
+        return strPlayerHand;
     }
 
     public int getPreference() {

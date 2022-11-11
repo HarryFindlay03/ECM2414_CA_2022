@@ -2,6 +2,7 @@ package cards;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 import java.util.Scanner;
@@ -17,7 +18,12 @@ public class FileHandler {
     public void createFile() {
         File f = new File(filename);
         try {
-            f.createNewFile();
+            if(f.createNewFile()) {
+                System.out.println("New file created: " + f.getName());
+            } else {
+                //file already exists so overwrite it
+                new FileWriter(filename, false).close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

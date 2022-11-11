@@ -2,6 +2,8 @@ package cards;
 
 import com.sun.jdi.ObjectReference;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -38,38 +40,22 @@ public class CardGame {
         }
     }
 
-    //Inner class readfile
-    class ReadFile {
-        public static Stack<Integer> getStack(String filename) throws FileNotFoundException {
-            Random random = new Random();
-            Stack<Integer> pack = new Stack<Integer>();
-            File f = new File(filename);
-            Scanner sc = new Scanner(f);
-
-            while(sc.hasNextLine()) {
-                String data = sc.nextLine();
-                pack.push(Integer.parseInt(data));
-            }
-
-            sc.close();
-            return pack;
-
-        }
-    }
-
     class PlayerThread implements Runnable {
         private static volatile boolean won = false;
 
         public void run() {
             String threadName = Thread.currentThread().getName();
             Player player = playersInGame.get(Integer.parseInt(threadName));
-            Deck pickupDeck = decksInGame.get(player.getPlayerId());
 
+            String playerFileName = String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId());
+
+
+            Deck pickupDeck = decksInGame.get(player.getPlayerId() - 1);
             Deck discardDeck;
-            if (player.getPlayerId() + 1 == numPlayers) {
+            if (player.getPlayerId() + 1 > numPlayers) {
                 discardDeck = decksInGame.get(0);
             } else {
-                discardDeck = decksInGame.get(player.getPlayerId() + 1);
+                discardDeck = decksInGame.get(player.getPlayerId());
             }
 
 
@@ -84,17 +70,25 @@ public class CardGame {
                         }
                     }
                 } else {
-                    System.out.printf("Player %d is running!\n", player.getPlayerId());
-                    Card pickedUp = pickUpCard(player);
-                    //System.out.printf("Player %d has picked up: %d\n", player.getPlayerId(), pickedUp.getCardValue());
-                    Card discarded = discardCard(player);
-                    //System.out.printf("Player %d has discarded : %d\n", player.getPlayerId(), discarded.getCardValue());
-                    //notify thread that is waiting, this thread will be the one that picks up from the deck just discarded to
+                    try {
+                        FileWriter playerFileWriter = new FileWriter(playerFileName, true);
+
+                        Card pickedUp = pickUpCard(player);
+                        playerFileWriter.write(String.format("Player %d draws a %d from deck %d\n", player.getPlayerId(), pickedUp.getCardValue(), pickupDeck.getDeckId()));
+
+                        Card discarded = discardCard(player);
+                        playerFileWriter.write(String.format("Player %d discards a %d to deck %d\n", player.getPlayerId(), discarded.getCardValue(), discardDeck.getDeckId()));
+
+                        playerFileWriter.write(String.format("Player %d current hand %s\n", player.getPlayerId() ,player.getPlayerHandString()));
+                        playerFileWriter.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     Player canPlay;
-                    if (player.getPlayerId() + 1 == numPlayers) {
+                    if (player.getPlayerId() + 1 > numPlayers) {
                         canPlay = playersInGame.get(0);
                     } else {
-                        canPlay = playersInGame.get(player.getPlayerId() + 1);
+                        canPlay = playersInGame.get(player.getPlayerId());
                     }
                     synchronized (canPlay) {
                         canPlay.notify();
@@ -119,7 +113,11 @@ public class CardGame {
     //setup game
     public void gameSetup() {
         for(int i = 0; i < numPlayers; i++) {
-            createPlayer();
+            int newPlayerId = createPlayer();
+            String playerFilename = String.format("src/cards/playerfiles/Player%d.txt", newPlayerId);
+            FileHandler playerFile = new FileHandler(playerFilename);
+            playerFile.createFile();
+
             createDeck();
         }
         addToPlayers();
@@ -177,7 +175,7 @@ public class CardGame {
     //GAMEPLAY methods
     public synchronized Card pickUpCard(Player player) {
         //get deck
-        Deck deck = decksInGame.get(player.getPlayerId());
+        Deck deck = decksInGame.get(player.getPlayerId() - 1);
         //remove from deck, add to player hand
         Card card = deck.removeCard();
         player.addToHand(card);
@@ -187,11 +185,11 @@ public class CardGame {
     public synchronized Card discardCard(Player player) {
         //get deck
         Deck deck;
-        if(player.getPlayerId() + 1 == numPlayers) {
+        if(player.getPlayerId() + 1 > numPlayers) {
             deck = decksInGame.get(0);
         }
         else {
-            deck = decksInGame.get(player.getPlayerId() + 1);
+            deck = decksInGame.get(player.getPlayerId());
         }
 
         //find card to discard

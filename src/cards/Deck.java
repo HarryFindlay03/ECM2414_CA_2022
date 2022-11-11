@@ -11,7 +11,7 @@ public class Deck {
 
     public Deck() {
         if(deckIds.size() == 0) {
-            deckId = 0;
+            deckId = 1;
         } else {
             deckId = deckIds.get(deckIds.size() - 1) + 1;
         }
