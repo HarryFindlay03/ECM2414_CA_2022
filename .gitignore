@@ -2,6 +2,7 @@
 /out
 /shelf/
 /src/cards/playerfiles/*.txt
+/src/cards/deckfiles/*.txt
 /packs/jonathan_packs/
 /packs/*.txt
 .DS_Store
