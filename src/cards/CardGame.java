@@ -121,7 +121,7 @@ public class CardGame {
                 FileWriter writer = new FileWriter(String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId()), true);
                 if (player != winningPlayer) {
                     writer.write(String.format("Player %d has informed Player %d that Player %d has won\n", winningPlayer.getPlayerId(), player.getPlayerId(), winningPlayer.getPlayerId()));
-                    writer.write(String.format("Player  %d exits\n", player.getPlayerId()));
+                    writer.write(String.format("Player %d exits\n", player.getPlayerId()));
 
                 } else {
                     System.out.printf("Player %d wins 😎\n", player.getPlayerId());
