@@ -42,6 +42,15 @@ public class Deck {
         return deckCards;
     }
 
+    public String getDeckCardsString() {
+        String returnStr = "";
+        for(Card c : deckCards) {
+            returnStr += String.format(" %d", c.getCardValue());
+        }
+
+        return returnStr;
+    }
+
     public static ArrayList<Integer> getDeckIds() {
         return deckIds;
     }

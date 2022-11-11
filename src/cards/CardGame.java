@@ -42,6 +42,7 @@ public class CardGame {
 
     class PlayerThread implements Runnable {
         private static volatile boolean won = false;
+        private static Player winningPlayer = null;
 
         public void run() {
             String threadName = Thread.currentThread().getName();
@@ -59,11 +60,10 @@ public class CardGame {
             }
 
 
-            while (!checkWin(player)) {
+            while (!checkWin(player) && !won) {
                 if (pickupDeck.getDeckCards().isEmpty()) {
                     synchronized (player) {
                         try {
-                            System.out.printf("Player %d is WAITING in thread %s\n", player.getPlayerId(), threadName);
                             player.wait();
                         } catch (InterruptedException e) {
                             /*DO nothing*/
@@ -96,29 +96,69 @@ public class CardGame {
                 }
             }
             //A player has won
-            for (int i = 0; i < numPlayers; i++) {
-                ArrayList<Integer> winningHand = new ArrayList<>();
-                for (Card c : playersInGame.get(i).getPlayerHand()) {
-                    winningHand.add(c.getCardValue());
-                }
-                System.out.println("Player " + playersInGame.get(i).getPlayerId() + "'s Hand: " + winningHand);
+            gameEnd(player);
+            try {
+                //Allowing threads to output to files
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            System.out.printf("Player %d has won!\n", player.getPlayerId());
-
             System.exit(9);
+        }
+
+        /**
+         * This method is called when a thread has won a game, all other threads shall be notified.
+         * Then each player file has to output which player has won, that the player has exited the game and the final hand of the player.
+         * Furthermore, the contents of each deck should be outputted to their respective deck file
+         */
+        void gameEnd(Player player) {
+            won = true;
+            if(winningPlayer == null) {
+                winningPlayer = player;
+            }
+
+            try {
+                FileWriter writer = new FileWriter(String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId()), true);
+                if (player != winningPlayer) {
+                    writer.write(String.format("Player %d has informed Player %d that Player %d has won\n", winningPlayer.getPlayerId(), player.getPlayerId(), winningPlayer.getPlayerId()));
+                    writer.write(String.format("Player  %d exits\n", player.getPlayerId()));
+
+                } else {
+                    System.out.printf("Player %d wins 😎\n", player.getPlayerId());
+                    writer.write(String.format("Player %d wins\n", player.getPlayerId()));
+                    writer.write(String.format("Player %d exits\n", player.getPlayerId()));
+                }
+                writer.write(String.format("Player %d final hand: %s\n", player.getPlayerId(), player.getPlayerHandString()));
+                writer.close();
+            } catch (IOException e) {/*NOT HANDLING*/}
+
+            //outputing to deck files
+            try {
+                for(int i = 0; i < decksInGame.size(); i++) {
+                    FileWriter deckWriter = new FileWriter(String.format("src/cards/deckfiles/Deck%d.txt", decksInGame.get(i).getDeckId()));
+                    deckWriter.write(String.format("deck%d contents:%s\n", decksInGame.get(i).getDeckId(), decksInGame.get(i).getDeckCardsString()));
+                    deckWriter.close();
+                }
+            } catch (IOException e) {/*NOT HANDLING*/}
         }
 
     }
 
     //setup game
     public void gameSetup() {
+        //clear files in the deck and player files directories.
+        ClearFiles.clearFiles();
+
+        //Create new players and decks and corresponding files for them
         for(int i = 0; i < numPlayers; i++) {
             int newPlayerId = createPlayer();
-            String playerFilename = String.format("src/cards/playerfiles/Player%d.txt", newPlayerId);
-            FileHandler playerFile = new FileHandler(playerFilename);
+            FileHandler playerFile = new FileHandler(String.format("src/cards/playerfiles/Player%d.txt", newPlayerId));
             playerFile.createFile();
 
-            createDeck();
+            int newDeckId = createDeck();
+            FileHandler deckFile = new FileHandler(String.format("src/cards/deckfiles/Deck%d.txt", newDeckId));
+            deckFile.createFile();
+
         }
         addToPlayers();
         addToDecks();
@@ -139,8 +179,17 @@ public class CardGame {
             for(int j = 0; j < numPlayers; j++) {
                 Player player = playersInGame.get(j);
                 Card card = new Card(pack.pop());
-                System.out.printf("Adding card %d to player %d hand\n", card.getCardValue(), player.getPlayerId());
                 player.addToHand(card);
+            }
+        }
+
+        for(Player player : playersInGame) {
+            try {
+                FileWriter writer = new FileWriter(String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId()));
+                writer.write(String.format("Player %d initial hand %s\n", player.getPlayerId(), player.getPlayerHandString()));
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -150,7 +199,6 @@ public class CardGame {
             for(int j = 0; j < numPlayers; j++) {
                 Deck deck = decksInGame.get(j);
                 Card card = new Card(pack.pop());
-                System.out.printf("Adding card %d to deck %d\n", card.getCardValue(), deck.getDeckId());
                 deck.addToDeckCards(card);
             }
         }
@@ -263,7 +311,7 @@ public class CardGame {
 
     //MAIN EXECUTABLE METHOD
     public static void main(String[] args) throws InvalidPackException, FileNotFoundException{
-        CardGame cg = new CardGame(4, "packs/4.txt");
+        CardGame cg = new CardGame(2, "packs/2.txt");
         cg.gameSetup();
         cg.gameRun();
     }
