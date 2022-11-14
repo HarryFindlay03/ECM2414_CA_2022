@@ -15,6 +15,9 @@ public class FileHandler {
         this.filename = filename;
     }
 
+    /**
+     * Creates a new file at the location given on the creation of a new FileHandler object.
+     */
     public void createFile() {
         File f = new File(filename);
         try {
@@ -24,6 +27,12 @@ public class FileHandler {
         }
     }
 
+    /**
+     * Returns a stack that represents the inputted pack file.
+     * @param filename Location of the pack file to be loaded.
+     * @return A stack that represents the pack.
+     * @throws FileNotFoundException
+     */
     public static Stack<Integer> getStack(String filename) throws FileNotFoundException {
         Random random = new Random();
         Stack<Integer> pack = new Stack<Integer>();
@@ -39,6 +48,10 @@ public class FileHandler {
         return pack;
     }
 
+    /**
+     * This function removes the files in the deckfiles and playerfiles directories before they are then repopulated
+     * with the files required for the new card game being played.
+     */
     public static void clearFiles() {
         //clear playerfiles and deck files
         for(File playerFile : new File("src/cards/playerfiles").listFiles()) playerFile.delete();
@@ -47,6 +60,16 @@ public class FileHandler {
 
     }
 
+    /**
+     * Returns a boolean value depending on the validity of an input file. In the case for this
+     * card game, the length of the file (number of lines) has to equal 8 * the number of players.
+     * e.g. If there are 4 players, the length of the pack file should be 32.
+     * @param filename Location of the pack file, either full path or path from content root.
+     * @param numPlayers The number of players that are playing in the game, this is so the
+     *                   correct pack length can be determined.
+     * @return A boolean value depending on the validity of the pack
+     * @throws FileNotFoundException
+     */
     public static boolean checkPackFile(String filename, int numPlayers) throws FileNotFoundException {
         int count;
         File packFile = new File(filename);
@@ -63,6 +86,12 @@ public class FileHandler {
         return false;
     }
 
+    /**
+     * Returns the number of lines in a given file
+     * @param filename Location of file, either full path or path from content root
+     * @return An integer value representing the number of lines in the file
+     * @throws FileNotFoundException
+     */
     public static int numLinesInFile(String filename) throws FileNotFoundException {
         int count;
         File f = new File(filename);
