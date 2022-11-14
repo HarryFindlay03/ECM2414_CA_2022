@@ -1,17 +1,13 @@
 package cards;
 
-import com.sun.jdi.ObjectReference;
-
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Random;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.Stack;
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 public class CardGame {
     private int numPlayers;
@@ -103,7 +99,7 @@ public class CardGame {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.exit(9);
+            System.exit(0);
         }
 
         /**
@@ -203,7 +199,6 @@ public class CardGame {
             }
         }
     }
-
 
 
     //create players
@@ -311,7 +306,47 @@ public class CardGame {
 
     //MAIN EXECUTABLE METHOD
     public static void main(String[] args) throws InvalidPackException, FileNotFoundException{
-        CardGame cg = new CardGame(2, "packs/2.txt");
+        //User inputs from command line.
+        Scanner sc = new Scanner(System.in);
+        boolean validPackInput = false;
+        int numPlayers;
+        int packLocation;
+
+        System.out.printf("Please enter the number of players: ");
+        //Checking input for number of players is a valid integer
+
+        //While numPlayers input is not valid, keep asking for a valid input.
+        while(!sc.hasNextInt()) {
+            sc = null;
+            sc = new Scanner(System.in);
+            System.out.printf("That is not a valid number! Please enter a valid one: ");
+        }
+        numPlayers = sc.nextInt();
+
+        //checking the number of lines in the input file
+        //TODO
+            //Check the location inputted has a file, try catch a file exception.
+        int correctNumLines = numPlayers * 8;
+        sc = new Scanner(System.in);
+        System.out.printf("Please enter the location of the pack to load: ");
+        File f = new File(sc.nextLine());
+        Scanner fScanner = new Scanner(f);
+
+        int numLines = 0;
+        while(fScanner.hasNextLine()) {
+            fScanner.nextLine();
+            numLines++;
+        }
+
+        //if numLines == correctNumLines file is valid else ask for a new one, while loop with flag.
+        System.out.println("Number of lines: " + numLines);
+
+        //Closing the scanners
+        sc.close();
+        fScanner.close();
+
+
+        CardGame cg = new CardGame(5, "packs/5.txt");
         cg.gameSetup();
         cg.gameRun();
     }
