@@ -109,7 +109,7 @@ public class CardGame {
             gameEnd(player);
             try {
                 //Allowing threads to output to files
-                Thread.sleep(1000);
+                Thread.sleep(1);
             } catch (InterruptedException e) {/*DO NOTHING*/}
             System.exit(0);
         }
