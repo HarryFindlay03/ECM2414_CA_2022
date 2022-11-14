@@ -50,21 +50,29 @@ public class FileHandler {
     public static boolean checkPackFile(String filename, int numPlayers) throws FileNotFoundException {
         int count;
         File packFile = new File(filename);
-        try {
-            Scanner sc = new Scanner(packFile);
+        Scanner sc = new Scanner(packFile);
 
-            count = 0;
-            while(sc.hasNextLine()) {
-                sc.nextLine();
-                count++;
-            }
-
-            if(count == numPlayers * 8) return true;
-
-            return false;
-        } catch (FileNotFoundException e) {
-            throw e;
+        count = 0;
+        while(sc.hasNextLine()) {
+            sc.nextLine();
+            count++;
         }
 
+        if(count == numPlayers * 8) return true;
+
+        return false;
+    }
+
+    public static int numLinesInFile(String filename) throws FileNotFoundException {
+        int count;
+        File f = new File(filename);
+        Scanner sc = new Scanner(f);
+
+        count = 0;
+        while(sc.hasNextLine()) {
+            sc.nextLine();
+            count++;
+        }
+        return count;
     }
 }

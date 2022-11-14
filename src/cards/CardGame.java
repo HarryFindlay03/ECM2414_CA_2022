@@ -328,18 +328,24 @@ public class CardGame {
             //Check the location inputted has a file, try catch a file exception.
         sc = new Scanner(System.in);
         System.out.printf("Please enter the location of the pack to load: ");
-
-        packLocation = sc.nextLine();
-        while(!FileHandler.checkPackFile(packLocation, numPlayers)) {
-            sc = null;
-            sc = new Scanner(System.in);
-            System.out.printf("That pack had an invalid number of lines! Please enter the location of a valid pack to load: ");
-            packLocation = sc.nextLine();
+        while(true) {
+            try {
+                packLocation = sc.nextLine();
+                while (!FileHandler.checkPackFile(packLocation, numPlayers)) {
+                    sc = null;
+                    sc = new Scanner(System.in);
+                    System.out.printf("That pack had an invalid number of lines! [%d] lines expected, this pack you gave has [%d] lines!\n", (numPlayers * 8), FileHandler.numLinesInFile(packLocation));
+                    System.out.printf("Please enter the location of a valid pack to load: ");
+                    packLocation = sc.nextLine();
+                }
+                break;
+            } catch(FileNotFoundException e) {
+                sc = new Scanner(System.in);
+                System.out.printf("That is an invalid pack location, the pack cannot be found:(\nPlease enter a valid location: ");
+            }
         }
         //Closing the scanner
         sc.close();
-
-
         CardGame cg = new CardGame(numPlayers, packLocation);
         cg.gameSetup();
         cg.gameRun();
