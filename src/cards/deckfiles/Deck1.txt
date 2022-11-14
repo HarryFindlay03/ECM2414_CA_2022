@@ -1,1 +1,0 @@
-deck1 contents: 12 10 12
