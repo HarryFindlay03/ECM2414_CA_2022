@@ -177,6 +177,9 @@ public class CardGame {
         addToDecks();
     }
 
+    /**
+     * Starts the required threads for the CardGame.
+     */
     public void gameRun() {
         //Player threads
         for(int i = 0; i < numPlayers; i++) {
@@ -186,6 +189,10 @@ public class CardGame {
         }
     }
 
+    /**
+     * Deals out cards to n players in the game, as well as writing to relevant player files the intial hand of each player.
+     * These files can be found in src/cards/playerfiles/Player[n].txt where n is the playerId.
+     */
     public void addToPlayers() {
         for(int i = 0; i < 4; i++){
             for(int j = 0; j < numPlayers; j++) {
@@ -206,6 +213,10 @@ public class CardGame {
         }
     }
 
+    /**
+     * This method deals out the remaining cards in the pack (after being dealt to players)
+     * to the n decks that are in the game.
+     */
     public void addToDecks() {
         for(int i = 0; i < 4; i++){
             for(int j = 0; j < numPlayers; j++) {
@@ -217,14 +228,24 @@ public class CardGame {
     }
 
 
-    //create players
+    /**
+     * Method that creates a new Player instance in the card game.
+     * This method also adds each new Player created to a list of players in game that is an
+     * instance attribute of the CardGame class.
+     * @return The newly created Player's deckId.
+     */
     public int createPlayer() {
         Player player = new Player();
         playersInGame.add(player);
         return player.getPlayerId();
     }
 
-    //create decks
+    /**
+     * Method that creates a new Deck instance in the card game.
+     * This method also adds each new Deck created to a list of decks in game that is an
+     * instance attribute of the CardGame class.
+     * @return The newly created Deck's deckId.
+     */
     public int createDeck() {
         Deck deck = new Deck();
         decksInGame.add(deck);
@@ -232,6 +253,12 @@ public class CardGame {
     }
 
     //GAMEPLAY methods
+
+    /**
+     * Picks up a card from deck i for player i.
+     * @param player The Player instance that is picking up.
+     * @return The Card instance that has been picked up.
+     */
     public synchronized Card pickUpCard(Player player) {
         //get deck
         Deck deck = decksInGame.get(player.getPlayerId() - 1);
@@ -241,6 +268,11 @@ public class CardGame {
         return card;
     }
 
+    /**
+     * Method that removes a card from a players hand
+     * @param player Player instance that you want to remove a card from.
+     * @return The Card instance that has been removed from the Player instance's hand.
+     */
     public synchronized Card discardCard(Player player) {
         //get deck
         Deck deck;
@@ -262,9 +294,9 @@ public class CardGame {
     }
 
     /**
-     * Checks a players preference, then returns the index of the card to discard based off of CA game strategy
-     * we have been tasked to implement.
-     * @param player
+     * Checks a players preference, then returns the Card object to discard from the Players hand.
+     * This method works off rules from the CA strategy that we has been tasked to implement.
+     * @param player Player object that you are checking the hand of.
      * @return Card object that should be discarded from player hand.
      */
     public Card getCardToDiscard(Player player) {
@@ -292,6 +324,11 @@ public class CardGame {
         return cardToDiscard;
     }
 
+    /**
+     * Checks an inputted Player objects hand to see if it a winning hand.
+     * @param player Player object that you want to check for a winning hand.
+     * @return Boolean value depending on whether the hand is a 'winning' hand.
+     */
     public Boolean checkWin(Player player) {
         ArrayList<Card> playerHand = player.getPlayerHand();
 
@@ -307,7 +344,7 @@ public class CardGame {
         return true;
     }
 
-    //GETTER METHODS
+    //GETTER METHODS -> These methods are used in testing.
     public Stack<Integer> getPack() {
         return pack;
     }
@@ -322,14 +359,12 @@ public class CardGame {
 
     //MAIN EXECUTABLE METHOD
     public static void main(String[] args) throws InvalidPackException, FileNotFoundException{
-        //User inputs from command line.
         Scanner sc = new Scanner(System.in);
-        boolean validPackInput = false;
         int numPlayers;
         String packLocation;
 
-        System.out.printf("Please enter the number of players: ");
         //Checking input for number of players is a valid integer
+        System.out.printf("Please enter the number of players: ");
 
         //While numPlayers input is not valid, keep asking for a valid input.
         while(!sc.hasNextInt()) {
@@ -342,7 +377,6 @@ public class CardGame {
         //This block of code checks the input file is valid.
         sc = new Scanner(System.in);
         System.out.printf("Please enter the location of the pack to load: ");
-
         while(true) {
             try {
                 packLocation = sc.nextLine();
@@ -359,8 +393,11 @@ public class CardGame {
                 System.out.printf("That is an invalid pack location, the pack cannot be found:(\nPlease enter a valid location: ");
             }
         }
-        //Closing the scanner
+
+        //Closing the scanner to prevent leaks.
         sc.close();
+
+        /*Creating a new CardGame instance, setting up the CardGame and running the CardGame*/
         CardGame cg = new CardGame(numPlayers, packLocation);
         cg.gameSetup();
         cg.gameRun();
