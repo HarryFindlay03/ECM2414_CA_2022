@@ -19,15 +19,20 @@ public class CardGame {
 
     private Stack<Integer> pack;
 
-
+    /**
+     * Creates a new CardGame instance, numPlayers and filename should be validated before a new CardGame instance
+     * is created.
+     * @param numPlayers The number of players in the game.
+     * @param filename The location of the pack file to play with.
+     * @throws InvalidPackException
+     * @throws FileNotFoundException
+     */
     public CardGame(int numPlayers, String filename) throws InvalidPackException, FileNotFoundException{
         if(numPlayers <= 0) {
             throw new InvalidPackException("Number of players needs to be greater than 0");
         }
         this.numPlayers = numPlayers;
 
-        //getting the pack
-        //checking the pack
         try {
             this.pack = FileHandler.getStack(filename);
         } catch (FileNotFoundException e) {
@@ -36,16 +41,23 @@ public class CardGame {
         }
     }
 
+    /**
+     * Inner class that implements multi-threading into the CardGame. There is a PlayerThread instance
+     * linked to each player in the game. E.g. with a 5 player game, there will be 5 threads running.
+     */
     class PlayerThread implements Runnable {
         private static volatile boolean won = false;
         private static Player winningPlayer = null;
 
+        /**
+         * Run method in the PlayerThread class
+         */
+        @Override
         public void run() {
             String threadName = Thread.currentThread().getName();
             Player player = playersInGame.get(Integer.parseInt(threadName));
 
             String playerFileName = String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId());
-
 
             Deck pickupDeck = decksInGame.get(player.getPlayerId() - 1);
             Deck discardDeck;
@@ -55,15 +67,14 @@ public class CardGame {
                 discardDeck = decksInGame.get(player.getPlayerId());
             }
 
-
             while (!checkWin(player) && !won) {
+                //IF the deck the current thread is trying to pick up from is empty, wait the thread.
+                //ELSE play a pickup and discard operation.
                 if (pickupDeck.getDeckCards().isEmpty()) {
                     synchronized (player) {
                         try {
                             player.wait();
-                        } catch (InterruptedException e) {
-                            /*DO nothing*/
-                        }
+                        } catch (InterruptedException e) {/*DO nothing*/}
                     }
                 } else {
                     try {
@@ -80,13 +91,16 @@ public class CardGame {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    Player canPlay;
+
+                    Player canPlay; //Computing the deck that can now play.
                     if (player.getPlayerId() + 1 > numPlayers) {
                         canPlay = playersInGame.get(0);
                     } else {
                         canPlay = playersInGame.get(player.getPlayerId());
                     }
                     synchronized (canPlay) {
+                        /* Notifying the thread that plays with the deck that has just been discarded to
+                        * that it can now play as this deck has been populated with a card*/
                         canPlay.notify();
                     }
                 }
@@ -96,9 +110,7 @@ public class CardGame {
             try {
                 //Allowing threads to output to files
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            } catch (InterruptedException e) {/*DO NOTHING*/}
             System.exit(0);
         }
 
@@ -140,7 +152,12 @@ public class CardGame {
 
     }
 
-    //setup game
+    /**
+     * Method that sets up the initial game state.
+     * This involves clearing the files in the playerfiles and deckfiles and creating n players and n decks,
+     * and distributing the pack to each of the players then each of the decks, both respectively in a round-robin format.
+     * (n is the inputted number of players)
+     */
     public void gameSetup() {
         //clear files in the deck and player files directories.
         FileHandler.clearFiles();
@@ -163,7 +180,6 @@ public class CardGame {
     public void gameRun() {
         //Player threads
         for(int i = 0; i < numPlayers; i++) {
-
             Thread t = new Thread(new PlayerThread());
             t.setName(Integer.toString(i));
             t.start();
@@ -323,11 +339,10 @@ public class CardGame {
         }
         numPlayers = sc.nextInt();
 
-        //checking the number of lines in the input file
-        //TODO
-            //Check the location inputted has a file, try catch a file exception.
+        //This block of code checks the input file is valid.
         sc = new Scanner(System.in);
         System.out.printf("Please enter the location of the pack to load: ");
+
         while(true) {
             try {
                 packLocation = sc.nextLine();
