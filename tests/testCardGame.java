@@ -162,18 +162,13 @@ public class testCardGame {
             assertEquals(true, cardGame.checkWin(playersInGame.get(0)));
         }
 
-        @Nested
-        class ThreadTests {
-            @BeforeEach
-            void setUpThreads() {
-                cardGame.gameRun();
-            }
-
-            @Test
-            void testPlayerThread() {
-                for(int i = 0; i < numPlayers; i++) {
-                    assertEquals(true, Thread.getAllStackTraces().keySet().contains(String.valueOf(i)));
-                }
+        @Test
+        void testGameWithSamePlayers() throws InvalidPackException, FileNotFoundException {
+            CardGame cg;
+            for(int i = 1; i < 101; i++) {
+                cg = new CardGame(i, String.format("packs/%d.txt", i));
+                cg.gameSetup();
+                cg.gameRun();
             }
         }
     }
