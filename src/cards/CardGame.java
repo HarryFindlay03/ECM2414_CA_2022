@@ -29,7 +29,7 @@ public class CardGame {
         //getting the pack
         //checking the pack
         try {
-            this.pack = ReadFile.getStack(filename);
+            this.pack = FileHandler.getStack(filename);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw e;
@@ -143,7 +143,7 @@ public class CardGame {
     //setup game
     public void gameSetup() {
         //clear files in the deck and player files directories.
-        ClearFiles.clearFiles();
+        FileHandler.clearFiles();
 
         //Create new players and decks and corresponding files for them
         for(int i = 0; i < numPlayers; i++) {
@@ -310,7 +310,7 @@ public class CardGame {
         Scanner sc = new Scanner(System.in);
         boolean validPackInput = false;
         int numPlayers;
-        int packLocation;
+        String packLocation;
 
         System.out.printf("Please enter the number of players: ");
         //Checking input for number of players is a valid integer
@@ -326,27 +326,21 @@ public class CardGame {
         //checking the number of lines in the input file
         //TODO
             //Check the location inputted has a file, try catch a file exception.
-        int correctNumLines = numPlayers * 8;
         sc = new Scanner(System.in);
         System.out.printf("Please enter the location of the pack to load: ");
-        File f = new File(sc.nextLine());
-        Scanner fScanner = new Scanner(f);
 
-        int numLines = 0;
-        while(fScanner.hasNextLine()) {
-            fScanner.nextLine();
-            numLines++;
+        packLocation = sc.nextLine();
+        while(!FileHandler.checkPackFile(packLocation, numPlayers)) {
+            sc = null;
+            sc = new Scanner(System.in);
+            System.out.printf("That pack had an invalid number of lines! Please enter the location of a valid pack to load: ");
+            packLocation = sc.nextLine();
         }
-
-        //if numLines == correctNumLines file is valid else ask for a new one, while loop with flag.
-        System.out.println("Number of lines: " + numLines);
-
-        //Closing the scanners
+        //Closing the scanner
         sc.close();
-        fScanner.close();
 
 
-        CardGame cg = new CardGame(5, "packs/5.txt");
+        CardGame cg = new CardGame(numPlayers, packLocation);
         cg.gameSetup();
         cg.gameRun();
     }

@@ -23,9 +23,7 @@ public class FileHandler {
             e.printStackTrace();
         }
     }
-}
 
-class ReadFile {
     public static Stack<Integer> getStack(String filename) throws FileNotFoundException {
         Random random = new Random();
         Stack<Integer> pack = new Stack<Integer>();
@@ -39,16 +37,34 @@ class ReadFile {
 
         sc.close();
         return pack;
-
     }
-}
 
-class ClearFiles {
     public static void clearFiles() {
         //clear playerfiles and deck files
         for(File playerFile : new File("src/cards/playerfiles").listFiles()) playerFile.delete();
 
         for(File deckFile : new File("src/cards/deckfiles").listFiles()) deckFile.delete();
+
+    }
+
+    public static boolean checkPackFile(String filename, int numPlayers) throws FileNotFoundException {
+        int count;
+        File packFile = new File(filename);
+        try {
+            Scanner sc = new Scanner(packFile);
+
+            count = 0;
+            while(sc.hasNextLine()) {
+                sc.nextLine();
+                count++;
+            }
+
+            if(count == numPlayers * 8) return true;
+
+            return false;
+        } catch (FileNotFoundException e) {
+            throw e;
+        }
 
     }
 }
