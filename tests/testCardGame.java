@@ -161,10 +161,10 @@ public class testCardGame {
             CardGame cg = new CardGame(2, "tests/res/2_pl1wins.txt");
 
             cg.gameSetup();
-            for(Player p : cg.getPlayersInGame()) {
-                System.out.printf("Player %d\n", p.getPlayerId());
-            }
+
             cg.gameRun();
+
+            System.out.println(cardGame.getWinningPlayer().getPlayerId());
 
             assertEquals(cardGame.getPlayersInGame().get(0), cardGame.getWinningPlayer()); //Player 1
         }
