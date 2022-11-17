@@ -235,6 +235,21 @@ public class CardGame {
         return true;
     }
 
+    /**
+     * Method that outputs remaining cards in decks to respective deck files
+     */
+    public synchronized void gameEnd() {
+        try {
+            for (int i = 0; i < decksInGame.size(); i++) {
+                int deckId = decksInGame.get(i).getDeckId();
+                String deckString = decksInGame.get(i).getDeckCardsString();
+                FileWriter deckWriter = new FileWriter(String.format("src/cards/deckfiles/Deck%d.txt", deckId));
+                deckWriter.write(String.format("deck%d contents:%s\n", deckId, deckString));
+                deckWriter.close();
+            }
+        } catch (IOException e) {/*NOT HANDLING*/}
+    }
+
     //GETTER METHODS
     public Stack<Integer> getPack() {
         return pack;
@@ -256,6 +271,11 @@ public class CardGame {
         return winningPlayer;
     }
 
+    /**
+     * Sets the CardGame object's winning player to the first player that has declared it has
+     * won.
+     * @param winningPlayer Player that has been passed by PlayerThread.
+     */
     public void setWinningPlayer(Player winningPlayer) {
         this.winningPlayer = winningPlayer;
     }
@@ -300,11 +320,9 @@ public class CardGame {
         //Closing the scanner to prevent leaks.
         sc.close();
 
-        for(int i = 0; i < 200; i++) { //Running the cardgame 10 times for testing.
-            /*Creating a new CardGame instance, setting up the CardGame and running the CardGame*/
-            CardGame cg = new CardGame(numPlayers, packLocation);
-            cg.gameSetup();
-            cg.gameRun();
-        }
+        CardGame cg = new CardGame(numPlayers, packLocation);
+        cg.gameSetup();
+        cg.gameRun();
+        cg.gameEnd();
     }
 }

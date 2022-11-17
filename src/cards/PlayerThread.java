@@ -89,47 +89,37 @@ public class PlayerThread implements Runnable {
      * Furthermore, the contents of each deck should be outputted to their respective deck file
      */
     void gameEnd(Player player) {
-        synchronized (this) {
-            while (!gameComplete) {
-                if (cg.getWinningPlayer() == null) {
-                    cg.setWinningPlayer(player);
-                }
-
-                //Notifying waiting threads that a thread has won the game
-                for(Deck d : cg.getDecksInGame()) {
-                    if(d.getDeckCards().size() == 0) {
-                        Player locked = cg.getPlayersInGame().get(d.getDeckId() - 1);
-                        synchronized (locked) {
-                            locked.notify();
-                        }
-                    }
-                }
-
-                try {
-                    FileWriter writer = new FileWriter(String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId()), true);
-                    if (player != cg.getWinningPlayer()) {
-                        writer.write(String.format("Player %d has informed Player %d that Player %d has won\n", cg.getWinningPlayer().getPlayerId(), player.getPlayerId(), cg.getWinningPlayer().getPlayerId()));
-                        writer.write(String.format("Player %d exits\n", player.getPlayerId()));
-
-                    } else {
-                        System.out.printf("Player %d wins 😎\n", player.getPlayerId());
-                        writer.write(String.format("Player %d wins\n", player.getPlayerId()));
-                        writer.write(String.format("Player %d exits\n", player.getPlayerId()));
-                    }
-                    writer.write(String.format("Player %d final hand: %s\n", player.getPlayerId(), player.getPlayerHandString()));
-                    writer.close();
-                } catch (IOException e) {/*NOT HANDLING*/}
-
-                //outputing to deck files
-                try {
-                    for (int i = 0; i < decksInGame.size(); i++) {
-                        FileWriter deckWriter = new FileWriter(String.format("src/cards/deckfiles/Deck%d.txt", decksInGame.get(i).getDeckId()));
-                        deckWriter.write(String.format("deck%d contents:%s\n", decksInGame.get(i).getDeckId(), decksInGame.get(i).getDeckCardsString()));
-                        deckWriter.close();
-                    }
-                } catch (IOException e) {/*NOT HANDLING*/}
-                gameComplete = true;
+        while (!gameComplete) {
+            if (cg.getWinningPlayer() == null) {
+                cg.setWinningPlayer(player);
             }
+
+            //Notifying waiting threads that a thread has won the game
+            for(Deck d : cg.getDecksInGame()) {
+                if(d.getDeckCards().size() == 0) {
+                    Player locked = cg.getPlayersInGame().get(d.getDeckId() - 1);
+                    synchronized (locked) {
+                        locked.notify();
+                    }
+                }
+            }
+
+            try {
+                FileWriter writer = new FileWriter(String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId()), true);
+                if (player != cg.getWinningPlayer()) {
+                    writer.write(String.format("Player %d has informed Player %d that Player %d has won\n", cg.getWinningPlayer().getPlayerId(), player.getPlayerId(), cg.getWinningPlayer().getPlayerId()));
+                    writer.write(String.format("Player %d exits\n", player.getPlayerId()));
+
+                } else {
+                    System.out.printf("Player %d wins 😎\n", player.getPlayerId());
+                    writer.write(String.format("Player %d wins\n", player.getPlayerId()));
+                    writer.write(String.format("Player %d exits\n", player.getPlayerId()));
+                }
+                writer.write(String.format("Player %d final hand: %s\n", player.getPlayerId(), player.getPlayerHandString()));
+                writer.close();
+            } catch (IOException e) {/*NOT HANDLING*/}
+
+            gameComplete = true;
         }
     }
 }
