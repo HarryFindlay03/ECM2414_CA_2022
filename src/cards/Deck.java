@@ -3,10 +3,11 @@ package cards;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Queue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Deck {
     private int deckId;
-    private ArrayList<Card> deckCards = new ArrayList<Card>();
+    private CopyOnWriteArrayList<Card> deckCards = new CopyOnWriteArrayList();
 
     public Deck(int deckId) {
         this.deckId = deckId;
@@ -32,7 +33,7 @@ public class Deck {
         return deckId;
     }
 
-    public ArrayList<Card> getDeckCards() {
+    public CopyOnWriteArrayList<Card> getDeckCards() {
         return deckCards;
     }
 

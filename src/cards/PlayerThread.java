@@ -84,7 +84,6 @@ public class PlayerThread implements Runnable {
         }
         //A player has won
         gameEnd(player);
-        fileWrite();
     }
 
     /**
@@ -123,12 +122,7 @@ public class PlayerThread implements Runnable {
                 writer.close();
             } catch (IOException e) {/*NOT HANDLING*/}
 
-            gameComplete = true;
-        }
-    }
-
-    void fileWrite() {
-        while(!fileWritten) {
+            //Writing to deck file
             try {
                 for (int i = 0; i < decksInGame.size(); i++) {
                     int deckId = decksInGame.get(i).getDeckId();
@@ -138,7 +132,7 @@ public class PlayerThread implements Runnable {
                     deckWriter.close();
                 }
             } catch (IOException e) {/*NOT HANDLING*/}
-            fileWritten = true;
+            gameComplete = true;
         }
     }
 }
