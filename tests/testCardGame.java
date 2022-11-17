@@ -23,16 +23,9 @@ public class testCardGame {
         cardGame.gameSetup();
     }
 
-    @AfterEach
-    void cleanUp() {
-        Player.getPlayerIds().clear();
-        Deck.getDeckIds().clear();
-    }
-
     @ParameterizedTest
     @ValueSource(ints = {-1, 0, 1, 2, 4, 5, 49, -999})
     void testGameSetup(int numPlayers) throws InvalidPackException, FileNotFoundException {
-        cleanUp();
         String filename = "packs/" + String.valueOf(numPlayers) + ".txt";
         if(numPlayers <= 0) {
             assertThrows(InvalidPackException.class, () -> {
@@ -41,19 +34,19 @@ public class testCardGame {
         } else {
             CardGame cg = new CardGame(numPlayers, filename);
             cg.gameSetup();
-            assertEquals(numPlayers, Player.getPlayerIds().size());
-            assertEquals(numPlayers, Deck.getDeckIds().size());
+            assertEquals(numPlayers, cg.getPlayersInGame().size());
+            assertEquals(numPlayers, cg.getDecksInGame().size());
         }
     }
 
     @Test
     void testPlayers() {
-        assertEquals(4, Player.getPlayerIds().size());
+        assertEquals(numPlayers, cardGame.getPlayersInGame().size());
     }
 
     @Test
     void testDecks() {
-        assertEquals(4, Deck.getDeckIds().size());
+        assertEquals(numPlayers, cardGame.getDecksInGame().size());
     }
 
     @Test
@@ -65,7 +58,7 @@ public class testCardGame {
 
     @Test
     void testPackLength() {
-        int expectedPackLength = Player.getPlayerIds().size() * 8 - (4 * Player.getPlayerIds().size()) - (4 * Deck.getDeckIds().size());
+        int expectedPackLength = cardGame.getPlayersInGame().size() * 8 - (4 * cardGame.getPlayersInGame().size()) - (4 * cardGame.getDecksInGame().size());
         assertEquals(expectedPackLength, cardGame.getPack().size());
     }
 
@@ -80,7 +73,7 @@ public class testCardGame {
             String filename = "packs/" + String.valueOf(numPlayers) + ".txt";
             CardGame cg = new CardGame(numPlayers, filename);
             cg.gameSetup();
-            int expectedPackLength = Player.getPlayerIds().size() * 8 - (4 * Player.getPlayerIds().size()) - (4 * Deck.getDeckIds().size());
+            int expectedPackLength = cardGame.getPlayersInGame().size() * 8 - (4 * cardGame.getPlayersInGame().size()) - (4 * cardGame.getDecksInGame().size());
             assertEquals(expectedPackLength, cg.getPack().size());
         }
     }
@@ -153,7 +146,6 @@ public class testCardGame {
                 Player player = playersInGame.get(i);
                 Card card = cardGame.getCardToDiscard(player);
                 assertNotEquals(player.getPreference(), card.getCardValue());
-
             }
         }
 
@@ -174,17 +166,17 @@ public class testCardGame {
             }
             cg.gameRun();
 
-            assertEquals("Player 1 wins 😎", out.toString());
+            assertEquals(cardGame.getPlayersInGame().get(0), cardGame.getWinningPlayer()); //Player 1
         }
 
-//        @Test
-//        void testGameWithSamePlayers() throws InvalidPackException, FileNotFoundException {
-//            CardGame cg;
-//            for(int i = 1; i < 101; i++) {
-//                cg = new CardGame(i, String.format("packs/%d.txt", i));
-//                cg.gameSetup();
-//                cg.gameRun();
-//            }
-//        }
+        @Test
+        void testGameWithSamePlayers() throws InvalidPackException, FileNotFoundException {
+            CardGame cg;
+            for(int i = 1; i < 101; i++) {
+                cg = new CardGame(i, String.format("packs/%d.txt", i));
+                cg.gameSetup();
+                cg.gameRun();
+            }
+        }
     }
 }
