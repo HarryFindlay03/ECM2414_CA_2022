@@ -46,8 +46,10 @@ public class CardGame {
      * linked to each player in the game. E.g. with a 5 player game, there will be 5 threads running.
      */
     class PlayerThread implements Runnable {
-        private static volatile boolean won = false;
-        private static Player winningPlayer = null;
+        private static volatile boolean won = false; //used to call the game end function and gather a winning player
+        private static Player winningPlayer = null; //Instantiated when a player has won
+
+        private boolean gameComplete = false; //used to kill the threads once all output has completed.
 
         /**
          * Run method in the PlayerThread class
@@ -107,11 +109,6 @@ public class CardGame {
             }
             //A player has won
             gameEnd(player);
-            try {
-                //Allowing threads to output to files
-                Thread.sleep(1);
-            } catch (InterruptedException e) {/*DO NOTHING*/}
-            System.exit(0);
         }
 
         /**
@@ -120,34 +117,37 @@ public class CardGame {
          * Furthermore, the contents of each deck should be outputted to their respective deck file
          */
         void gameEnd(Player player) {
-            won = true;
-            if(winningPlayer == null) {
-                winningPlayer = player;
+            while(!gameComplete) {
+                won = true;
+                if (winningPlayer == null) {
+                    winningPlayer = player;
+                }
+
+                try {
+                    FileWriter writer = new FileWriter(String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId()), true);
+                    if (player != winningPlayer) {
+                        writer.write(String.format("Player %d has informed Player %d that Player %d has won\n", winningPlayer.getPlayerId(), player.getPlayerId(), winningPlayer.getPlayerId()));
+                        writer.write(String.format("Player %d exits\n", player.getPlayerId()));
+
+                    } else {
+                        System.out.printf("Player %d wins 😎\n", player.getPlayerId());
+                        writer.write(String.format("Player %d wins\n", player.getPlayerId()));
+                        writer.write(String.format("Player %d exits\n", player.getPlayerId()));
+                    }
+                    writer.write(String.format("Player %d final hand: %s\n", player.getPlayerId(), player.getPlayerHandString()));
+                    writer.close();
+                } catch (IOException e) {/*NOT HANDLING*/}
+
+                //outputing to deck files
+                try {
+                    for (int i = 0; i < decksInGame.size(); i++) {
+                        FileWriter deckWriter = new FileWriter(String.format("src/cards/deckfiles/Deck%d.txt", decksInGame.get(i).getDeckId()));
+                        deckWriter.write(String.format("deck%d contents:%s\n", decksInGame.get(i).getDeckId(), decksInGame.get(i).getDeckCardsString()));
+                        deckWriter.close();
+                    }
+                } catch (IOException e) {/*NOT HANDLING*/}
+                gameComplete = true;
             }
-
-            try {
-                FileWriter writer = new FileWriter(String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId()), true);
-                if (player != winningPlayer) {
-                    writer.write(String.format("Player %d has informed Player %d that Player %d has won\n", winningPlayer.getPlayerId(), player.getPlayerId(), winningPlayer.getPlayerId()));
-                    writer.write(String.format("Player %d exits\n", player.getPlayerId()));
-
-                } else {
-                    System.out.printf("Player %d wins 😎\n", player.getPlayerId());
-                    writer.write(String.format("Player %d wins\n", player.getPlayerId()));
-                    writer.write(String.format("Player %d exits\n", player.getPlayerId()));
-                }
-                writer.write(String.format("Player %d final hand: %s\n", player.getPlayerId(), player.getPlayerHandString()));
-                writer.close();
-            } catch (IOException e) {/*NOT HANDLING*/}
-
-            //outputing to deck files
-            try {
-                for(int i = 0; i < decksInGame.size(); i++) {
-                    FileWriter deckWriter = new FileWriter(String.format("src/cards/deckfiles/Deck%d.txt", decksInGame.get(i).getDeckId()));
-                    deckWriter.write(String.format("deck%d contents:%s\n", decksInGame.get(i).getDeckId(), decksInGame.get(i).getDeckCardsString()));
-                    deckWriter.close();
-                }
-            } catch (IOException e) {/*NOT HANDLING*/}
         }
 
     }
