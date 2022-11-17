@@ -1,5 +1,6 @@
 import cards.*;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Random;
 
 import org.junit.jupiter.api.*;
@@ -163,13 +164,27 @@ public class testCardGame {
         }
 
         @Test
-        void testGameWithSamePlayers() throws InvalidPackException, FileNotFoundException {
-            CardGame cg;
-            for(int i = 1; i < 101; i++) {
-                cg = new CardGame(i, String.format("packs/%d.txt", i));
-                cg.gameSetup();
-                cg.gameRun();
+        void testPlayer1WinsImmediately() throws InvalidPackException, FileNotFoundException {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            CardGame cg = new CardGame(2, "tests/res/2_pl1wins.txt");
+
+            cg.gameSetup();
+            for(Player p : cg.getPlayersInGame()) {
+                System.out.printf("Player %d\n", p.getPlayerId());
             }
+            cg.gameRun();
+
+            assertEquals("Player 1 wins 😎", out.toString());
         }
+
+//        @Test
+//        void testGameWithSamePlayers() throws InvalidPackException, FileNotFoundException {
+//            CardGame cg;
+//            for(int i = 1; i < 101; i++) {
+//                cg = new CardGame(i, String.format("packs/%d.txt", i));
+//                cg.gameSetup();
+//                cg.gameRun();
+//            }
+//        }
     }
 }
