@@ -14,9 +14,6 @@ public class PlayerThread implements Runnable {
     ArrayList<Player> playersInGame;
     ArrayList<Deck> decksInGame;
 
-    //private static volatile boolean won = false; //used to call the game end function and gather a winning player
-    //private static Player winningPlayer = null; //Instantiated when a player has won
-
     private volatile boolean gameComplete = false; //used to kill the threads once all output has completed.
 
     public PlayerThread(CardGame cg) {
