@@ -164,11 +164,11 @@ public class CardGame {
 
         //Create new players and decks and corresponding files for them
         for(int i = 0; i < numPlayers; i++) {
-            int newPlayerId = createPlayer();
+            int newPlayerId = createPlayer(i + 1);
             FileHandler playerFile = new FileHandler(String.format("src/cards/playerfiles/Player%d.txt", newPlayerId));
             playerFile.createFile();
 
-            int newDeckId = createDeck();
+            int newDeckId = createDeck(i + 1);
             FileHandler deckFile = new FileHandler(String.format("src/cards/deckfiles/Deck%d.txt", newDeckId));
             deckFile.createFile();
 
@@ -234,8 +234,8 @@ public class CardGame {
      * instance attribute of the CardGame class.
      * @return The newly created Player's deckId.
      */
-    public int createPlayer() {
-        Player player = new Player();
+    public int createPlayer(int playerId) {
+        Player player = new Player(playerId);
         playersInGame.add(player);
         return player.getPlayerId();
     }
@@ -246,8 +246,8 @@ public class CardGame {
      * instance attribute of the CardGame class.
      * @return The newly created Deck's deckId.
      */
-    public int createDeck() {
-        Deck deck = new Deck();
+    public int createDeck(int deckId) {
+        Deck deck = new Deck(deckId);
         decksInGame.add(deck);
         return deck.getDeckId();
     }
