@@ -300,7 +300,7 @@ public class CardGame {
         //Closing the scanner to prevent leaks.
         sc.close();
 
-        for(int i = 0; i < 10; i++) { //Running the cardgame 10 times for testing.
+        for(int i = 0; i < 200; i++) { //Running the cardgame 10 times for testing.
             /*Creating a new CardGame instance, setting up the CardGame and running the CardGame*/
             CardGame cg = new CardGame(numPlayers, packLocation);
             cg.gameSetup();
