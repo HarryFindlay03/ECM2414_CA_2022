@@ -305,10 +305,8 @@ public class CardGame {
         //Closing the scanner to prevent leaks.
         sc.close();
 
-        for(int i = 0; i < 500; i++) {
-            CardGame cg = new CardGame(numPlayers, packLocation);
-            cg.gameSetup();
-            cg.gameRun();
-        }
+        CardGame cg = new CardGame(numPlayers, packLocation);
+        cg.gameSetup();
+        cg.gameRun();
     }
 }
