@@ -15,6 +15,8 @@ public class CardGame {
     private ArrayList<Player> playersInGame = new ArrayList<Player>();
     private ArrayList<Deck> decksInGame = new ArrayList<Deck>();
 
+    private volatile Player winningPlayer = null;
+
     //potentially each card game has a list of playerids and deck ids associated with it.
 
     private Stack<Integer> pack;
@@ -250,6 +252,14 @@ public class CardGame {
         return numPlayers;
     }
 
+    public Player getWinningPlayer() {
+        return winningPlayer;
+    }
+
+    public void setWinningPlayer(Player winningPlayer) {
+        this.winningPlayer = winningPlayer;
+    }
+
     //MAIN EXECUTABLE METHOD
     public static void main(String[] args) throws InvalidPackException, FileNotFoundException{
         Scanner sc = new Scanner(System.in);
@@ -290,12 +300,11 @@ public class CardGame {
         //Closing the scanner to prevent leaks.
         sc.close();
 
-        /*Creating a new CardGame instance, setting up the CardGame and running the CardGame*/
-        for(int i = 0; i < 100; i++) {
+        for(int i = 0; i < 10; i++) { //Running the cardgame 10 times for testing.
+            /*Creating a new CardGame instance, setting up the CardGame and running the CardGame*/
             CardGame cg = new CardGame(numPlayers, packLocation);
             cg.gameSetup();
             cg.gameRun();
-            System.out.println(Thread.activeCount());
         }
     }
 }

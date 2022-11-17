@@ -14,10 +14,10 @@ public class PlayerThread implements Runnable {
     ArrayList<Player> playersInGame;
     ArrayList<Deck> decksInGame;
 
-    private static volatile boolean won = false; //used to call the game end function and gather a winning player
-    private static Player winningPlayer = null; //Instantiated when a player has won
+    //private static volatile boolean won = false; //used to call the game end function and gather a winning player
+    //private static Player winningPlayer = null; //Instantiated when a player has won
 
-    private boolean gameComplete = false; //used to kill the threads once all output has completed.
+    private volatile boolean gameComplete = false; //used to kill the threads once all output has completed.
 
     public PlayerThread(CardGame cg) {
         this.cg = cg;
@@ -44,7 +44,7 @@ public class PlayerThread implements Runnable {
             discardDeck = decksInGame.get(player.getPlayerId());
         }
 
-        while (!cg.checkWin(player) && !won) {
+        while (!cg.checkWin(player) && cg.getWinningPlayer() == null) {
             //IF the deck the current thread is trying to pick up from is empty, wait the thread.
             //ELSE play a pickup and discard operation.
             if (pickupDeck.getDeckCards().isEmpty()) {
@@ -93,15 +93,15 @@ public class PlayerThread implements Runnable {
      */
     void gameEnd(Player player) {
         while(!gameComplete) {
-            won = true;
-            if (winningPlayer == null) {
-                winningPlayer = player;
+            //won = true;
+            if (cg.getWinningPlayer() == null) {
+                cg.setWinningPlayer(player);
             }
 
             try {
                 FileWriter writer = new FileWriter(String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId()), true);
-                if (player != winningPlayer) {
-                    writer.write(String.format("Player %d has informed Player %d that Player %d has won\n", winningPlayer.getPlayerId(), player.getPlayerId(), winningPlayer.getPlayerId()));
+                if (player != cg.getWinningPlayer()) {
+                    writer.write(String.format("Player %d has informed Player %d that Player %d has won\n", cg.getWinningPlayer().getPlayerId(), player.getPlayerId(), cg.getWinningPlayer().getPlayerId()));
                     writer.write(String.format("Player %d exits\n", player.getPlayerId()));
 
                 } else {
@@ -124,5 +124,4 @@ public class PlayerThread implements Runnable {
             gameComplete = true;
         }
     }
-
 }

@@ -36,7 +36,7 @@ public class Deck {
         return deckCards;
     }
 
-    public String getDeckCardsString() {
+    public synchronized String getDeckCardsString() {
         String returnStr = "";
         for(Card c : deckCards) {
             returnStr += String.format(" %d", c.getCardValue());
