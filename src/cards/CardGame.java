@@ -42,117 +42,6 @@ public class CardGame {
     }
 
     /**
-     * Inner class that implements multi-threading into the CardGame. There is a PlayerThread instance
-     * linked to each player in the game. E.g. with a 5 player game, there will be 5 threads running.
-     */
-    class PlayerThread implements Runnable {
-        private static volatile boolean won = false; //used to call the game end function and gather a winning player
-        private static Player winningPlayer = null; //Instantiated when a player has won
-
-        private boolean gameComplete = false; //used to kill the threads once all output has completed.
-
-        /**
-         * Run method in the PlayerThread class
-         */
-        @Override
-        public void run() {
-            String threadName = Thread.currentThread().getName();
-            Player player = playersInGame.get(Integer.parseInt(threadName));
-
-            String playerFileName = String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId());
-
-            Deck pickupDeck = decksInGame.get(player.getPlayerId() - 1);
-            Deck discardDeck;
-            if (player.getPlayerId() + 1 > numPlayers) {
-                discardDeck = decksInGame.get(0);
-            } else {
-                discardDeck = decksInGame.get(player.getPlayerId());
-            }
-
-            while (!checkWin(player) && !won) {
-                //IF the deck the current thread is trying to pick up from is empty, wait the thread.
-                //ELSE play a pickup and discard operation.
-                if (pickupDeck.getDeckCards().isEmpty()) {
-                    synchronized (player) {
-                        try {
-                            player.wait();
-                        } catch (InterruptedException e) {/*DO nothing*/}
-                    }
-                } else {
-                    try {
-                        FileWriter playerFileWriter = new FileWriter(playerFileName, true);
-
-                        Card pickedUp = pickUpCard(player);
-                        playerFileWriter.write(String.format("Player %d draws a %d from deck %d\n", player.getPlayerId(), pickedUp.getCardValue(), pickupDeck.getDeckId()));
-
-                        Card discarded = discardCard(player);
-                        playerFileWriter.write(String.format("Player %d discards a %d to deck %d\n", player.getPlayerId(), discarded.getCardValue(), discardDeck.getDeckId()));
-
-                        playerFileWriter.write(String.format("Player %d current hand %s\n", player.getPlayerId() ,player.getPlayerHandString()));
-                        playerFileWriter.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    Player canPlay; //Computing the deck that can now play.
-                    if (player.getPlayerId() + 1 > numPlayers) {
-                        canPlay = playersInGame.get(0);
-                    } else {
-                        canPlay = playersInGame.get(player.getPlayerId());
-                    }
-                    synchronized (canPlay) {
-                        /* Notifying the thread that plays with the deck that has just been discarded to
-                        * that it can now play as this deck has been populated with a card*/
-                        canPlay.notify();
-                    }
-                }
-            }
-            //A player has won
-            gameEnd(player);
-        }
-
-        /**
-         * This method is called when a thread has won a game, all other threads shall be notified.
-         * Then each player file has to output which player has won, that the player has exited the game and the final hand of the player.
-         * Furthermore, the contents of each deck should be outputted to their respective deck file
-         */
-        void gameEnd(Player player) {
-            while(!gameComplete) {
-                won = true;
-                if (winningPlayer == null) {
-                    winningPlayer = player;
-                }
-
-                try {
-                    FileWriter writer = new FileWriter(String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId()), true);
-                    if (player != winningPlayer) {
-                        writer.write(String.format("Player %d has informed Player %d that Player %d has won\n", winningPlayer.getPlayerId(), player.getPlayerId(), winningPlayer.getPlayerId()));
-                        writer.write(String.format("Player %d exits\n", player.getPlayerId()));
-
-                    } else {
-                        System.out.printf("Player %d wins 😎\n", player.getPlayerId());
-                        writer.write(String.format("Player %d wins\n", player.getPlayerId()));
-                        writer.write(String.format("Player %d exits\n", player.getPlayerId()));
-                    }
-                    writer.write(String.format("Player %d final hand: %s\n", player.getPlayerId(), player.getPlayerHandString()));
-                    writer.close();
-                } catch (IOException e) {/*NOT HANDLING*/}
-
-                //outputing to deck files
-                try {
-                    for (int i = 0; i < decksInGame.size(); i++) {
-                        FileWriter deckWriter = new FileWriter(String.format("src/cards/deckfiles/Deck%d.txt", decksInGame.get(i).getDeckId()));
-                        deckWriter.write(String.format("deck%d contents:%s\n", decksInGame.get(i).getDeckId(), decksInGame.get(i).getDeckCardsString()));
-                        deckWriter.close();
-                    }
-                } catch (IOException e) {/*NOT HANDLING*/}
-                gameComplete = true;
-            }
-        }
-
-    }
-
-    /**
      * Method that sets up the initial game state.
      * This involves clearing the files in the playerfiles and deckfiles and creating n players and n decks,
      * and distributing the pack to each of the players then each of the decks, both respectively in a round-robin format.
@@ -164,11 +53,11 @@ public class CardGame {
 
         //Create new players and decks and corresponding files for them
         for(int i = 0; i < numPlayers; i++) {
-            int newPlayerId = createPlayer(i + 1);
+            int newPlayerId = createPlayer(i + 1); //i+1 as playerIds are 1 indexed
             FileHandler playerFile = new FileHandler(String.format("src/cards/playerfiles/Player%d.txt", newPlayerId));
             playerFile.createFile();
 
-            int newDeckId = createDeck(i + 1);
+            int newDeckId = createDeck(i + 1); //i+1 as deckIds are 1 indexed
             FileHandler deckFile = new FileHandler(String.format("src/cards/deckfiles/Deck%d.txt", newDeckId));
             deckFile.createFile();
 
@@ -183,7 +72,7 @@ public class CardGame {
     public void gameRun() {
         //Player threads
         for(int i = 0; i < numPlayers; i++) {
-            Thread t = new Thread(new PlayerThread());
+            Thread t = new Thread(new PlayerThread(this));
             t.setName(Integer.toString(i));
             t.start();
         }
@@ -344,7 +233,7 @@ public class CardGame {
         return true;
     }
 
-    //GETTER METHODS -> These methods are used in testing.
+    //GETTER METHODS
     public Stack<Integer> getPack() {
         return pack;
     }
@@ -355,6 +244,10 @@ public class CardGame {
 
     public ArrayList<Deck> getDecksInGame() {
         return decksInGame;
+    }
+
+    public int getNumPlayers() {
+        return numPlayers;
     }
 
     //MAIN EXECUTABLE METHOD
@@ -398,8 +291,11 @@ public class CardGame {
         sc.close();
 
         /*Creating a new CardGame instance, setting up the CardGame and running the CardGame*/
-        CardGame cg = new CardGame(numPlayers, packLocation);
-        cg.gameSetup();
-        cg.gameRun();
+        for(int i = 0; i < 100; i++) {
+            CardGame cg = new CardGame(numPlayers, packLocation);
+            cg.gameSetup();
+            cg.gameRun();
+            System.out.println(Thread.activeCount());
+        }
     }
 }
