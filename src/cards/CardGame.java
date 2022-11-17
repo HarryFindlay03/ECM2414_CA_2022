@@ -235,21 +235,6 @@ public class CardGame {
         return true;
     }
 
-    /**
-     * Method that outputs remaining cards in decks to respective deck files
-     */
-    public synchronized void gameEnd() {
-        try {
-            for (int i = 0; i < decksInGame.size(); i++) {
-                int deckId = decksInGame.get(i).getDeckId();
-                String deckString = decksInGame.get(i).getDeckCardsString();
-                FileWriter deckWriter = new FileWriter(String.format("src/cards/deckfiles/Deck%d.txt", deckId));
-                deckWriter.write(String.format("deck%d contents:%s\n", deckId, deckString));
-                deckWriter.close();
-            }
-        } catch (IOException e) {/*NOT HANDLING*/}
-    }
-
     //GETTER METHODS
     public Stack<Integer> getPack() {
         return pack;
@@ -320,9 +305,10 @@ public class CardGame {
         //Closing the scanner to prevent leaks.
         sc.close();
 
-        CardGame cg = new CardGame(numPlayers, packLocation);
-        cg.gameSetup();
-        cg.gameRun();
-        cg.gameEnd();
+        for(int i = 0; i < 500; i++) {
+            CardGame cg = new CardGame(numPlayers, packLocation);
+            cg.gameSetup();
+            cg.gameRun();
+        }
     }
 }

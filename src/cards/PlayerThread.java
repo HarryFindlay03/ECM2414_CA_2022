@@ -3,6 +3,8 @@ package cards;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class that implements multi-threading into the CardGame. There is a PlayerThread instance
@@ -15,6 +17,7 @@ public class PlayerThread implements Runnable {
     ArrayList<Deck> decksInGame;
 
     private volatile boolean gameComplete = false; //used to kill the threads once all output has completed.
+    private volatile boolean fileWritten = false;
 
     public PlayerThread(CardGame cg) {
         this.cg = cg;
@@ -81,6 +84,7 @@ public class PlayerThread implements Runnable {
         }
         //A player has won
         gameEnd(player);
+        fileWrite();
     }
 
     /**
@@ -120,6 +124,21 @@ public class PlayerThread implements Runnable {
             } catch (IOException e) {/*NOT HANDLING*/}
 
             gameComplete = true;
+        }
+    }
+
+    void fileWrite() {
+        while(!fileWritten) {
+            try {
+                for (int i = 0; i < decksInGame.size(); i++) {
+                    int deckId = decksInGame.get(i).getDeckId();
+                    String deckString = decksInGame.get(i).getDeckCardsString();
+                    FileWriter deckWriter = new FileWriter(String.format("src/cards/deckfiles/Deck%d.txt", deckId));
+                    deckWriter.write(String.format("deck%d contents:%s\n", deckId, deckString));
+                    deckWriter.close();
+                }
+            } catch (IOException e) {/*NOT HANDLING*/}
+            fileWritten = true;
         }
     }
 }
