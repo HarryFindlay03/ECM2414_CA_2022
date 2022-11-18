@@ -128,15 +128,9 @@ public class testCardGame {
         @Test
         void testDiscardCard() {
             for(int i = 0; i < playersInGame.size(); i++) {
+                cardGame.pickUpCard(playersInGame.get(i));
                 cardGame.discardCard(playersInGame.get(i));
-                assertEquals(3, playersInGame.get(i).getPlayerHand().size());
-
-                if(playersInGame.get(i).getPlayerId() + 1 == playersInGame.size()) {
-                    assertEquals(5, decksInGame.get(0).getDeckCards().size());
-                }
-                else {
-                    assertEquals(5, decksInGame.get(i + 1).getDeckCards().size());
-                }
+                assertEquals(4, playersInGame.get(i).getPlayerHand().size());
             }
         }
 
@@ -144,6 +138,7 @@ public class testCardGame {
         void testGetCardToDiscard() {
             for(int i = 0; i < playersInGame.size(); i++) {
                 Player player = playersInGame.get(i);
+                cardGame.pickUpCard(playersInGame.get(i));
                 Card card = cardGame.getCardToDiscard(player);
                 assertNotEquals(player.getPreference(), card.getCardValue());
             }
@@ -164,19 +159,17 @@ public class testCardGame {
 
             cg.gameRun();
 
-            System.out.println(cardGame.getWinningPlayer().getPlayerId());
-
             assertEquals(cardGame.getPlayersInGame().get(0), cardGame.getWinningPlayer()); //Player 1
         }
 
-        @Test
-        void testGameWithSamePlayers() throws InvalidPackException, FileNotFoundException {
-            CardGame cg;
-            for(int i = 1; i < 101; i++) {
-                cg = new CardGame(i, String.format("packs/%d.txt", i));
-                cg.gameSetup();
-                cg.gameRun();
-            }
-        }
+//        @Test
+//        void testGameAlot() throws InvalidPackException, FileNotFoundException {
+//            CardGame cg;
+//            for(int i = 1; i < 101; i++) {
+//                cg = new CardGame(i, String.format("packs/%d.txt", i));
+//                cg.gameSetup();
+//                cg.gameRun();
+//            }
+//        }
     }
 }
