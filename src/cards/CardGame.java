@@ -17,7 +17,6 @@ public class CardGame {
 
     private volatile Player winningPlayer = null;
 
-    //potentially each card game has a list of playerids and deck ids associated with it.
 
     private Stack<Integer> pack;
 

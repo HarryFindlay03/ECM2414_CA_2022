@@ -17,7 +17,6 @@ public class PlayerThread implements Runnable {
     ArrayList<Deck> decksInGame;
 
     private volatile boolean gameComplete = false; //used to kill the threads once all output has completed.
-    private volatile boolean fileWritten = false;
 
     public PlayerThread(CardGame cg) {
         this.cg = cg;
