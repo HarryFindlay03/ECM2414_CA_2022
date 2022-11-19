@@ -1,13 +1,14 @@
 import cards.*;
 
-import java.io.ByteArrayOutputStream;
+import java.io.*;
+import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Random;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,8 +27,8 @@ public class testCardGame {
     @ParameterizedTest
     @ValueSource(ints = {-1, 0, 1, 2, 4, 5, 49, -999})
     void testGameSetup(int numPlayers) throws InvalidPackException, FileNotFoundException {
-        String filename = "packs/" + String.valueOf(numPlayers) + ".txt";
-        if(numPlayers <= 0) {
+        String filename = "packs/" + numPlayers + ".txt";
+        if (numPlayers <= 0) {
             assertThrows(InvalidPackException.class, () -> {
                 CardGame cg = new CardGame(numPlayers, filename);
             });
@@ -52,7 +53,7 @@ public class testCardGame {
     @Test
     void testInvalidInput() {
         assertThrows(InvalidPackException.class, () -> {
-           CardGame invalidCardGame = new CardGame(-1, "test.txt");
+            new CardGame(-1, "1.txt");
         });
     }
 
@@ -65,7 +66,7 @@ public class testCardGame {
     @ParameterizedTest
     @ValueSource(ints = {-99, 10, 5, 4, 6, 7})
     void testPack(int numPlayers) throws InvalidPackException, FileNotFoundException {
-        if(numPlayers <= 0) {
+        if (numPlayers <= 0) {
             assertThrows(InvalidPackException.class, () -> {
                 CardGame invalidCardGame = new CardGame(numPlayers, "test.txt");
             });
@@ -87,14 +88,14 @@ public class testCardGame {
 
     @Test
     void testPlayerHand() {
-        for(int i = 0; i < cardGame.getPlayersInGame().size(); i++) {
+        for (int i = 0; i < cardGame.getPlayersInGame().size(); i++) {
             assertEquals(4, cardGame.getPlayersInGame().get(i).getPlayerHand().size());
         }
     }
 
     @Test
     void testDeckCards() {
-        for(int i = 0; i < cardGame.getPlayersInGame().size(); i++) {
+        for (int i = 0; i < cardGame.getPlayersInGame().size(); i++) {
             assertEquals(4, cardGame.getDecksInGame().get(i).getDeckCards().size());
         }
     }
@@ -118,7 +119,7 @@ public class testCardGame {
 
         @Test
         void testPickUpCard() {
-            for(int i = 0; i < playersInGame.size(); i++) {
+            for (int i = 0; i < playersInGame.size(); i++) {
                 cardGame.pickUpCard(playersInGame.get(i));
                 assertEquals(5, playersInGame.get(i).getPlayerHand().size());
                 assertEquals(3, decksInGame.get(i).getDeckCards().size());
@@ -127,7 +128,7 @@ public class testCardGame {
 
         @Test
         void testDiscardCard() {
-            for(int i = 0; i < playersInGame.size(); i++) {
+            for (int i = 0; i < playersInGame.size(); i++) {
                 cardGame.pickUpCard(playersInGame.get(i));
                 cardGame.discardCard(playersInGame.get(i));
                 assertEquals(4, playersInGame.get(i).getPlayerHand().size());
@@ -136,7 +137,7 @@ public class testCardGame {
 
         @Test
         void testGetCardToDiscard() {
-            for(int i = 0; i < playersInGame.size(); i++) {
+            for (int i = 0; i < playersInGame.size(); i++) {
                 Player player = playersInGame.get(i);
                 cardGame.pickUpCard(playersInGame.get(i));
                 Card card = cardGame.getCardToDiscard(player);
@@ -150,17 +151,6 @@ public class testCardGame {
             assertEquals(true, cardGame.checkWin(playersInGame.get(0)));
         }
 
-        @Test
-        void testPlayer1WinsImmediately() throws InvalidPackException, FileNotFoundException {
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            CardGame cg = new CardGame(2, "tests/res/2_pl1wins.txt");
-
-            cg.gameSetup();
-
-            cg.gameRun();
-
-            assertEquals(cardGame.getPlayersInGame().get(0), cardGame.getWinningPlayer()); //Player 1
-        }
 
 //        @Test
 //        void testGameAlot() throws InvalidPackException, FileNotFoundException {
