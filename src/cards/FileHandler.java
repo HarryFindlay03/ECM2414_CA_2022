@@ -61,6 +61,17 @@ public class FileHandler {
     }
 
     /**
+     * Overloaded version of clearFiles for testing purposes.
+     * @param dirname directory where files live
+     */
+    public static void clearFiles(String dirname) {
+        for(File playerFile : new File(dirname).listFiles()) playerFile.delete();
+
+        for(File deckFile : new File(dirname).listFiles()) deckFile.delete();
+
+    }
+
+    /**
      * Returns a boolean value depending on the validity of an input file. In the case for this
      * card game, the length of the file (number of lines) has to equal 8 * the number of players.
      * e.g. If there are 4 players, the length of the pack file should be 32.
