@@ -100,6 +100,26 @@ public class testCardGame {
         }
     }
 
+    @Test
+    void testInitialHand() throws Exception {
+        CardGame cg = new CardGame(4, "tests/res/4_testInitHand.txt");
+        cg.gameSetup();
+        assertEquals(" 4 4 4 4", cg.getPlayersInGame().get(0).getPlayerHandString());
+    }
+
+    @Test
+    void testHands() {
+        cardGame.gameRun();
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {}
+
+        for(Player p : cardGame.getPlayersInGame()) {
+            assertEquals(4, p.getPlayerHand().size());
+        }
+    }
+
     @Nested
     class gameplayTests {
         ArrayList<Player> playersInGame;
