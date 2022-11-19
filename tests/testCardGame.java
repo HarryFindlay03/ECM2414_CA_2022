@@ -152,14 +152,57 @@ public class testCardGame {
         }
 
 
-//        @Test
-//        void testGameAlot() throws InvalidPackException, FileNotFoundException {
-//            CardGame cg;
-//            for(int i = 1; i < 101; i++) {
-//                cg = new CardGame(i, String.format("packs/%d.txt", i));
-//                cg.gameSetup();
-//                cg.gameRun();
-//            }
-//        }
+        @Test
+        void testGameAlot() throws InvalidPackException, FileNotFoundException {
+            CardGame cg;
+            for(int i = 1; i < 101; i++) {
+                cg = new CardGame(i, String.format("packs/%d.txt", i));
+                cg.gameSetup();
+                cg.gameRun();
+            }
+        }
+
+    @Nested
+    class FileHandlerTests {
+            FileHandler fh;
+
+            @AfterEach
+            void tearDown() {
+                FileHandler.clearFiles("tests/res/FileHandlerTestFiles");
+            }
+
+            @Test
+            void testFileCreation() throws Exception {
+                for(int i = 0; i < 5; i++) {
+                    FileHandler f = new FileHandler(String.format("tests/res/FileHandlerTestFiles/%d.txt", i));
+                    f.createFile();
+                }
+
+                for(int j = 0; j < 5; j++) {
+                    File f = new File(String.format("tests/res/FileHandlerTestFiles/%d.txt", j));
+                    assertEquals(String.valueOf(j) + ".txt", f.getName());
+                }
+            }
+
+            @Test
+            void testRemoveFiles() throws Exception {
+                for(int i = 0; i < 5; i++) {
+                    FileHandler f = new FileHandler(String.format("tests/res/FileHandlerTestFiles/%d.txt", i));
+                    f.createFile();
+                }
+
+                FileHandler.clearFiles("tests/res/FileHandlerTestFiles");
+
+                File[] dir = new File("tests/res/FileHandlerTestFiles").listFiles();
+
+                assertEquals(0, dir.length);
+            }
+
+            @Test
+            void testNumLines() throws Exception {
+                assertEquals(16, FileHandler.numLinesInFile("tests/res/2_pl1wins.txt"));
+            }
+    }
+
     }
 }
