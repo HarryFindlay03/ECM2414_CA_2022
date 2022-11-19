@@ -34,7 +34,6 @@ public class FileHandler {
      * @throws FileNotFoundException
      */
     public static Stack<Integer> getStack(String filename) throws FileNotFoundException {
-        Random random = new Random();
         Stack<Integer> pack = new Stack<Integer>();
         File f = new File(filename);
         Scanner sc = new Scanner(f);
