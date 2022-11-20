@@ -50,7 +50,8 @@ public class CardGame {
      */
     public void gameSetup() {
         //clear files in the deck and player files directories.
-        FileHandler.clearFiles();
+        FileHandler.clearFiles("./output-files/playerfiles");
+        FileHandler.clearFiles("./output-files/deckfiles");
 
         //Create new players and decks and corresponding files for them
         for(int i = 0; i < numPlayers; i++) {

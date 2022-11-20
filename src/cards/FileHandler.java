@@ -4,9 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Random;
-import java.util.Scanner;
-import java.util.Stack;
+import java.nio.file.*;
+import java.util.*;
 
 public class FileHandler {
     String filename;
@@ -53,19 +52,38 @@ public class FileHandler {
      */
     public static void clearFiles() {
         //clear playerfiles and deck files
-        for(File playerFile : new File("output-files/playerfiles").listFiles()) playerFile.delete();
+        for(File playerFile : new File("output-files/playerfiles").listFiles()) {
+            playerFile.delete();
+        }
 
         for(File deckFile : new File("output-files/deckfiles").listFiles()) deckFile.delete();
 
     }
 
-    /**
-     * Overloaded version of clearFiles for testing purposes.
-     * @param dirname directory where files live
-     */
-    public static void clearFiles(String dirname) {
-        for(File f : new File(dirname).listFiles()) f.delete();
+    public static void clearFiles(String dir) {
+        Set<String> fileSet = new HashSet<>();
+
+        try(DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(dir))) {
+            for (Path path : stream) {
+                fileSet.add(path.getFileName().toString());
+            }
+        } catch (IOException e) {}
+
+        for(String fileName : fileSet) {
+            Path path = FileSystems.getDefault().getPath(String.format("%s/%s", dir, fileName));
+            try {
+                Files.delete(path);
+            } catch (IOException e) {}
+        }
     }
+
+//    /**
+//     * Overloaded version of clearFiles for testing purposes.
+//     * @param dirname directory where files live
+//     */
+//    public static void clearFiles(String dirname) {
+//        for(File f : new File(dirname).listFiles()) f.delete();
+//    }
 
     /**
      * Returns a boolean value depending on the validity of an input file. In the case for this
