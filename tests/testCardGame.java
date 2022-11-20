@@ -51,7 +51,7 @@ public class testCardGame {
     }
 
     @Test
-    void testInvalidInput() {
+    void testInvalidPackException() {
         assertThrows(InvalidPackException.class, () -> {
             new CardGame(-1, "1.txt");
         });
