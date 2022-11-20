@@ -3,8 +3,6 @@ package cards;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Class that implements multi-threading into the CardGame. There is a PlayerThread instance
