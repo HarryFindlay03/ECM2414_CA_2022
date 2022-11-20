@@ -290,14 +290,16 @@ public class CardGame {
                 while (!FileHandler.checkPackFile(packLocation, numPlayers)) {
                     sc = null;
                     sc = new Scanner(System.in);
-                    System.out.printf("That pack had an invalid number of lines! [%d] lines expected, this pack you gave has [%d] lines!\n", (numPlayers * 8), FileHandler.numLinesInFile(packLocation));
-                    System.out.printf("Please enter the location of a valid pack to load: ");
                     packLocation = sc.nextLine();
                 }
                 break;
             } catch(FileNotFoundException e) {
                 sc = new Scanner(System.in);
                 System.out.printf("That is an invalid pack location, the pack cannot be found:(\nPlease enter a valid location: ");
+            } catch(InvalidPackException e) {
+                sc = new Scanner(System.in);
+                System.out.printf("%s\n", e.getMessage());
+                System.out.printf("Please enter the location of a valid pack to load: ");
             }
         }
 

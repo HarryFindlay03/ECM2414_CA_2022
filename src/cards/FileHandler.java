@@ -77,7 +77,7 @@ public class FileHandler {
      * @return A boolean value depending on the validity of the pack
      * @throws FileNotFoundException
      */
-    public static boolean checkPackFile(String filename, int numPlayers) throws FileNotFoundException {
+    public static boolean checkPackFile(String filename, int numPlayers) throws FileNotFoundException, InvalidPackException {
         int count;
         File packFile = new File(filename);
         Scanner sc = new Scanner(packFile);
@@ -90,7 +90,7 @@ public class FileHandler {
 
         if(count == numPlayers * 8) return true;
 
-        return false;
+        throw new InvalidPackException(String.format("Pack Length not correct! File had [%d] lines, expecting [%d] lines.", count, (numPlayers * 8)));
     }
 
     /**
