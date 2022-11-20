@@ -135,6 +135,7 @@ public class testCardGame {
         void tearDown() {
             playersInGame.clear();
             decksInGame.clear();
+            FileHandler.clearFiles();
         }
 
         @Test
@@ -176,10 +177,14 @@ public class testCardGame {
         void testGameAlot() throws InvalidPackException, FileNotFoundException {
             CardGame cg;
             for(int i = 1; i < 101; i++) {
+                System.out.printf("Game run: %d\tTesting with [%d] players.\n", i, i);
                 cg = new CardGame(i, String.format("packs/%d.txt", i));
                 cg.gameSetup();
                 cg.gameRun();
             }
+            try {
+                Thread.sleep(1000);
+            }catch(InterruptedException e) {}
         }
 
     @Nested
