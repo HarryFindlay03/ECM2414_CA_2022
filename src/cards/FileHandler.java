@@ -64,10 +64,7 @@ public class FileHandler {
      * @param dirname directory where files live
      */
     public static void clearFiles(String dirname) {
-        for(File playerFile : new File(dirname).listFiles()) playerFile.delete();
-
-        for(File deckFile : new File(dirname).listFiles()) deckFile.delete();
-
+        for(File f : new File(dirname).listFiles()) f.delete();
     }
 
     /**
