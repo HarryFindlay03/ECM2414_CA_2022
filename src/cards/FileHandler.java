@@ -53,9 +53,9 @@ public class FileHandler {
      */
     public static void clearFiles() {
         //clear playerfiles and deck files
-        for(File playerFile : new File("src/cards/playerfiles").listFiles()) playerFile.delete();
+        for(File playerFile : new File("output-files/playerfiles").listFiles()) playerFile.delete();
 
-        for(File deckFile : new File("src/cards/deckfiles").listFiles()) deckFile.delete();
+        for(File deckFile : new File("output-files/deckfiles").listFiles()) deckFile.delete();
 
     }
 

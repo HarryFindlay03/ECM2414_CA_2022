@@ -31,7 +31,7 @@ public class PlayerThread implements Runnable {
         String threadName = Thread.currentThread().getName();
         Player player = cg.getPlayersInGame().get(Integer.parseInt(threadName));
 
-        String playerFileName = String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId());
+        String playerFileName = String.format("output-files/playerfiles/Player%d.txt", player.getPlayerId());
 
         Deck pickupDeck = cg.getDecksInGame().get(player.getPlayerId() - 1);
         Deck discardDeck;
@@ -105,7 +105,7 @@ public class PlayerThread implements Runnable {
             }
 
             try {
-                FileWriter writer = new FileWriter(String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId()), true);
+                FileWriter writer = new FileWriter(String.format("output-files/playerfiles/Player%d.txt", player.getPlayerId()), true);
                 if (player != cg.getWinningPlayer()) {
                     writer.write(String.format("Player %d has informed Player %d that Player %d has won\n", cg.getWinningPlayer().getPlayerId(), player.getPlayerId(), cg.getWinningPlayer().getPlayerId()));
                     writer.write(String.format("Player %d exits\n", player.getPlayerId()));
@@ -124,7 +124,7 @@ public class PlayerThread implements Runnable {
                 for (int i = 0; i < decksInGame.size(); i++) {
                     int deckId = decksInGame.get(i).getDeckId();
                     String deckString = decksInGame.get(i).getDeckCardsString();
-                    FileWriter deckWriter = new FileWriter(String.format("src/cards/deckfiles/Deck%d.txt", deckId));
+                    FileWriter deckWriter = new FileWriter(String.format("output-files/deckfiles/Deck%d.txt", deckId));
                     deckWriter.write(String.format("deck%d contents:%s\n", deckId, deckString));
                     deckWriter.close();
                 }

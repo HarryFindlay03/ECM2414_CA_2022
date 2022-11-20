@@ -55,11 +55,11 @@ public class CardGame {
         //Create new players and decks and corresponding files for them
         for(int i = 0; i < numPlayers; i++) {
             int newPlayerId = createPlayer(i + 1); //i+1 as playerIds are 1 indexed
-            FileHandler playerFile = new FileHandler(String.format("src/cards/playerfiles/Player%d.txt", newPlayerId));
+            FileHandler playerFile = new FileHandler(String.format("output-files/playerfiles/Player%d.txt", newPlayerId));
             playerFile.createFile();
 
             int newDeckId = createDeck(i + 1); //i+1 as deckIds are 1 indexed
-            FileHandler deckFile = new FileHandler(String.format("src/cards/deckfiles/Deck%d.txt", newDeckId));
+            FileHandler deckFile = new FileHandler(String.format("output-files/deckfiles/Deck%d.txt", newDeckId));
             deckFile.createFile();
 
         }
@@ -94,7 +94,7 @@ public class CardGame {
 
         for(Player player : playersInGame) {
             try {
-                FileWriter writer = new FileWriter(String.format("src/cards/playerfiles/Player%d.txt", player.getPlayerId()));
+                FileWriter writer = new FileWriter(String.format("output-files/playerfiles/Player%d.txt", player.getPlayerId()));
                 writer.write(String.format("Player %d initial hand %s\n", player.getPlayerId(), player.getPlayerHandString()));
                 writer.close();
             } catch (IOException e) {
