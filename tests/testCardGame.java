@@ -36,7 +36,7 @@ public class testCardGame {
     @ValueSource(ints = {-1, 0, 1, 2, 4, 5, 49, -999})
     void testGameSetup(int numPlayers) throws InvalidPackException, FileNotFoundException {
         String filename = "packs/" + numPlayers + ".txt";
-        if (numPlayers <= 0) {
+        if (numPlayers <= 2) {
             assertThrows(InvalidPackException.class, () -> {
                 CardGame cg = new CardGame(numPlayers, filename);
             });
