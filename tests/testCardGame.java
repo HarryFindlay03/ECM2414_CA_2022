@@ -19,6 +19,14 @@ public class testCardGame {
 
     @BeforeEach
     void setUp() throws InvalidPackException, FileNotFoundException {
+        //Creating file-output directories
+        try {
+            Files.createDirectory(Paths.get("output-files"));
+            Files.createDirectory(Paths.get("output-files/playerfiles"));
+            Files.createDirectory(Paths.get("output-files/deckfiles"));
+        } catch (IOException e) {
+            //do nothing
+        }
         numPlayers = 4;
         cardGame = new CardGame(numPlayers, "packs/" + numPlayers + ".txt");
         cardGame.gameSetup();
@@ -135,8 +143,6 @@ public class testCardGame {
         void tearDown() {
             playersInGame.clear();
             decksInGame.clear();
-            FileHandler.clearFiles("output-files/playerfiles");
-            FileHandler.clearFiles("output-files/deckfiles");
         }
 
         @Test
@@ -177,7 +183,7 @@ public class testCardGame {
         @Test
         void testGameAlot() throws InvalidPackException, FileNotFoundException {
             CardGame cg;
-            for(int i = 1; i < 101; i++) {
+            for(int i = 2; i < 101; i++) {
                 System.out.printf("Game run: %d\tTesting with [%d] players.\n", i, i);
                 cg = new CardGame(i, String.format("packs/%d.txt", i));
                 cg.gameSetup();
