@@ -35,7 +35,7 @@ public class TestCardGame {
     @ParameterizedTest
     @ValueSource(ints = {-1, 0, 1, 2, 4, 5, 49, -999})
     void testGameSetup(int numPlayers) throws InvalidPackException, FileNotFoundException {
-        String filename = "packs/" + numPlayers + ".txt";
+        String filename = "tests/res/" + numPlayers + ".txt";
         if (numPlayers < 2) {
             assertThrows(InvalidPackException.class, () -> {
                 CardGame cg = new CardGame(numPlayers, filename);
@@ -79,7 +79,7 @@ public class TestCardGame {
                 CardGame invalidCardGame = new CardGame(numPlayers, "test.txt");
             });
         } else {
-            String filename = "packs/" + String.valueOf(numPlayers) + ".txt";
+            String filename = "tests/res/" + String.valueOf(numPlayers) + ".txt";
             CardGame cg = new CardGame(numPlayers, filename);
             cg.gameSetup();
             int expectedPackLength = cardGame.getPlayersInGame().size() * 8 - (4 * cardGame.getPlayersInGame().size()) - (4 * cardGame.getDecksInGame().size());
@@ -185,7 +185,7 @@ public class TestCardGame {
             CardGame cg;
             for(int i = 2; i < 101; i++) {
                 System.out.printf("Game run: %d\tTesting with [%d] players.\n", i, i);
-                cg = new CardGame(i, String.format("packs/%d.txt", i));
+                cg = new CardGame(i, String.format("tests/res/%d.txt", i));
                 cg.gameSetup();
                 cg.gameRun();
             }
