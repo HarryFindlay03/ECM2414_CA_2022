@@ -335,6 +335,7 @@ public class CardGame {
         } catch (IOException e) {
             //do nothing
         }
+
         CardGame cg = new CardGame(numPlayers, packLocation);
         cg.gameSetup();
         cg.gameRun();
