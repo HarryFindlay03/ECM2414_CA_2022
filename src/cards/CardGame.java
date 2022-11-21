@@ -3,10 +3,7 @@ package cards;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Random;
-import java.util.ArrayList;
-import java.util.Scanner;
-import java.util.Stack;
+import java.util.*;
 import java.io.FileNotFoundException;
 
 public class CardGame {
@@ -29,8 +26,8 @@ public class CardGame {
      * @throws FileNotFoundException
      */
     public CardGame(int numPlayers, String filename) throws InvalidPackException, FileNotFoundException{
-        if(numPlayers <= 0) {
-            throw new InvalidPackException("Number of players needs to be greater than 0");
+        if(numPlayers < 2) {
+            throw new InvalidPackException("Number of players needs to be 2 or more!");
         }
         this.numPlayers = numPlayers;
 
@@ -271,16 +268,37 @@ public class CardGame {
         int numPlayers;
         String packLocation;
 
-        //Checking input for number of players is a valid integer
+
         System.out.printf("Please enter the number of players: ");
 
-        //While numPlayers input is not valid, keep asking for a valid input.
-        while(!sc.hasNextInt()) {
-            sc = null;
-            sc = new Scanner(System.in);
-            System.out.printf("That is not a valid number! Please enter a valid one: ");
+        //Checking input for number of players is a valid integer.
+        //Checking input for number of players is >= 2 players.
+        while(true) {
+            try {
+                //While numPlayers input is not valid, keep asking for a valid input.
+                while(!sc.hasNextInt()) {
+                    sc = null;
+                    sc = new Scanner(System.in);
+                    System.out.printf("That is not a valid number! Please enter a valid one: ");
+                }
+                numPlayers = sc.nextInt();
+
+                while(numPlayers < 2) {
+                    sc = null;
+                    sc = new Scanner(System.in);
+                    System.out.printf("That number is too small! The game needs at least 2 players to play!\n");
+                    System.out.printf("Please enter a valid number: ");
+                    numPlayers = sc.nextInt();
+                }
+
+                break;
+            } catch (InputMismatchException e) {
+                sc = null;
+                sc = new Scanner(System.in);
+                System.out.printf("That is not a valid number! Please enter a valid one: ");
+            }
         }
-        numPlayers = sc.nextInt();
+
 
         //This block of code checks the input file is valid.
         sc = new Scanner(System.in);
