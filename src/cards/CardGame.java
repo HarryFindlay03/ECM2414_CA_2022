@@ -3,6 +3,8 @@ package cards;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.io.FileNotFoundException;
 
@@ -325,6 +327,14 @@ public class CardGame {
         //Closing the scanner to prevent leaks.
         sc.close();
 
+        //Creating file-output directories
+        try {
+            Files.createDirectory(Paths.get("output-files"));
+            Files.createDirectory(Paths.get("output-files/playerfiles"));
+            Files.createDirectory(Paths.get("output-files/deckfiles"));
+        } catch (IOException e) {
+            //do nothing
+        }
         CardGame cg = new CardGame(numPlayers, packLocation);
         cg.gameSetup();
         cg.gameRun();
