@@ -1,9 +1,7 @@
 /.idea/workspace.xml
 /out
 /shelf/
-/packs/jonathan_packs/
-output-files/playerfiles/*.txt
-output-files/deckfiles/*.txt
+/output-files/
 /packs/*.txt
 .DS_Store
 /cards

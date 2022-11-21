@@ -13,7 +13,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class testCardGame {
+public class TestCardGame {
     CardGame cardGame;
     int numPlayers;
 
@@ -129,7 +129,7 @@ public class testCardGame {
     }
 
     @Nested
-    class gameplayTests {
+    class TestGameplay {
         ArrayList<Player> playersInGame;
         ArrayList<Deck> decksInGame;
 
@@ -199,12 +199,12 @@ public class testCardGame {
             FileHandler fh;
 
             @AfterEach
-            void tearDown() throws IOException {
+            void tearDown() {
                 FileHandler.clearFiles("tests/res/FileHandlerTestFiles");
             }
 
             @Test
-            void testFileCreation() throws Exception {
+            void testFileCreation() {
                 for(int i = 0; i < 5; i++) {
                     FileHandler f = new FileHandler(String.format("tests/res/FileHandlerTestFiles/%d.txt", i));
                     f.createFile();
@@ -224,7 +224,7 @@ public class testCardGame {
             }
 
             @Test
-            void testRemoveFiles() throws Exception {
+            void testRemoveFiles() {
                 for(int i = 0; i < 5; i++) {
                     FileHandler f = new FileHandler(String.format("tests/res/FileHandlerTestFiles/%d.txt", i));
                     f.createFile();
