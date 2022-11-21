@@ -36,7 +36,7 @@ public class testCardGame {
     @ValueSource(ints = {-1, 0, 1, 2, 4, 5, 49, -999})
     void testGameSetup(int numPlayers) throws InvalidPackException, FileNotFoundException {
         String filename = "packs/" + numPlayers + ".txt";
-        if (numPlayers <= 2) {
+        if (numPlayers < 2) {
             assertThrows(InvalidPackException.class, () -> {
                 CardGame cg = new CardGame(numPlayers, filename);
             });
@@ -194,8 +194,8 @@ public class testCardGame {
             }catch(InterruptedException e) {}
         }
 
-    @Nested
-    class FileHandlerTests {
+        @Nested
+        class FileHandlerTests {
             FileHandler fh;
 
             @AfterEach
@@ -247,7 +247,7 @@ public class testCardGame {
             void testNumLines() throws Exception {
                 assertEquals(16, FileHandler.numLinesInFile("tests/res/2_pl1wins.txt"));
             }
-    }
+        }
 
     }
 }
