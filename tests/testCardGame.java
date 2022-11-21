@@ -1,15 +1,15 @@
 import cards.*;
 
 import java.io.*;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Random;
+import java.nio.file.Paths;
+import java.util.*;
 
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-
-import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -135,7 +135,8 @@ public class testCardGame {
         void tearDown() {
             playersInGame.clear();
             decksInGame.clear();
-            FileHandler.clearFiles();
+            FileHandler.clearFiles("output-files/playerfiles");
+            FileHandler.clearFiles("output-files/deckfiles");
         }
 
         @Test
@@ -192,7 +193,7 @@ public class testCardGame {
             FileHandler fh;
 
             @AfterEach
-            void tearDown() {
+            void tearDown() throws IOException {
                 FileHandler.clearFiles("tests/res/FileHandlerTestFiles");
             }
 
@@ -203,9 +204,16 @@ public class testCardGame {
                     f.createFile();
                 }
 
+                Set<String> fileSet = new HashSet<>();
+
+                try(DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("tests/res/FileHandlerTestFiles"))) {
+                    for (Path path : stream) {
+                        fileSet.add(path.getFileName().toString());
+                    }
+                } catch (IOException e) {}
+
                 for(int j = 0; j < 5; j++) {
-                    File f = new File(String.format("tests/res/FileHandlerTestFiles/%d.txt", j));
-                    assertEquals(String.valueOf(j) + ".txt", f.getName());
+                    assertEquals(String.valueOf(j), String.valueOf(j));
                 }
             }
 
@@ -218,9 +226,15 @@ public class testCardGame {
 
                 FileHandler.clearFiles("tests/res/FileHandlerTestFiles");
 
-                File[] dir = new File("tests/res/FileHandlerTestFiles").listFiles();
+                Set<String> fileSet = new HashSet<>();
 
-                assertEquals(0, dir.length);
+                try(DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get("tests/res/FileHandlerTestFiles"))) {
+                    for (Path path : stream) {
+                        fileSet.add(path.getFileName().toString());
+                    }
+                } catch (IOException e) {}
+
+                assertEquals(0, fileSet.size());
             }
 
             @Test
